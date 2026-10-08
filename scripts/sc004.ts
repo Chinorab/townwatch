@@ -32,7 +32,7 @@ let done = 0;
 for (const id of ids) {
   const idx = lookupPlace(id);
   if (!idx) {
-    results.push(`| ${id} | not in index | | | | |`);
+    results.push(`| ${id} | not in index | | | | | |`);
     continue;
   }
   const ctx = await createContext({ log: () => {} });
@@ -46,9 +46,10 @@ for (const id of ids) {
     const mainMeetings = briefing.meetings.filter((m) => m.role === "county_executive" || m.role === "executive").map((m) => m.meetingId);
     const mainItems = briefing.headlineItems.filter((h) => mainMeetings.includes(h.meeting.meetingId)).length + briefing.alsoOnAgenda.filter((a) => mainMeetings.includes(a.meetingId)).length;
     const ok = mainItems > 0;
-    row = `| ${idx.name}, ${idx.state} | ${ok ? "yes" : "no"} | ${covered.join(", ") || "none"} | ${briefing.panel.itemsTotal} items, ${briefing.headlineItems.length} explained | ${((Date.now() - t0) / 1000).toFixed(0)} s | $${cost.toFixed(3)} |`;
+    const mainSource = briefing.panel.sourcesKept.find((x) => x.role === "county_executive" || x.role === "executive");
+    row = `| ${idx.name}, ${idx.state} | ${ok ? "yes" : "no"} | ${mainSource ? new URL(mainSource.url).hostname : "none"} | ${covered.join(", ") || "none"} | ${briefing.panel.itemsTotal} items, ${briefing.headlineItems.length} explained | ${((Date.now() - t0) / 1000).toFixed(0)} s | $${cost.toFixed(3)} |`;
   } catch (err) {
-    row = `| ${idx.name}, ${idx.state} | error | ${String(err).slice(0, 80)} | | ${((Date.now() - t0) / 1000).toFixed(0)} s | |`;
+    row = `| ${idx.name}, ${idx.state} | error | | ${String(err).slice(0, 80)} | | ${((Date.now() - t0) / 1000).toFixed(0)} s | |`;
   }
   done++;
   results.push(row);
@@ -68,8 +69,8 @@ main governing body is read. Sample: Wasco County, OR (demo place) and 10 counti
 every ${step} rows from the ${eligible.length} Medill 2025 news-desert counties of 5,000+ people
 (Alaska boroughs excluded).
 
-| County | Success | Bodies covered | Items | Time | Model cost |
-|---|---|---|---|---|---|
+| County | Success | Main body source | Bodies covered | Items | Time | Model cost |
+|---|---|---|---|---|---|---|
 ${results.filter((r) => r.startsWith("|")).join("\n")}
 ${results.filter((r) => !r.startsWith("|")).join("\n")}
 

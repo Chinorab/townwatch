@@ -10,6 +10,7 @@ import { readerFor } from "./readers/index";
 import { windowFor, type ListedMeeting } from "./readers/types";
 import { pdfText, readDocument } from "./stages/read";
 import { splitAgenda } from "./stages/split";
+import { letterheadOtherState } from "./stages/placecheck";
 
 export type Progress = (stage: string, detail: string) => void;
 
@@ -150,10 +151,10 @@ function longDate(iso: string): string {
 }
 
 export function readSources(ctx: Ctx, placeId: string, sources: Source[], progress: Progress = () => {}, alternates: Record<string, Source[]> = {}): Promise<ReadResult> {
-  return withSpend(ctx, placeId, () => readSourcesInner(ctx, sources, progress, alternates));
+  return withSpend(ctx, placeId, () => readSourcesInner(ctx, sources, progress, alternates, placeId.slice(0, 2).toUpperCase()));
 }
 
-async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress, alternates: Record<string, Source[]>): Promise<ReadResult> {
+async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress, alternates: Record<string, Source[]>, state: string): Promise<ReadResult> {
   const window = windowFor(ctx.now);
   const meetings: Meeting[] = [];
   const items: AgendaItem[] = [];
@@ -191,8 +192,10 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
       }
     }
     sourcesUsed.push(source);
-    meetingsBySource.set(source.sourceId, listed.filter((m) => m.agendaPublished !== false).length);
     progress("read", `${source.role}: ${listed.length} meetings in window`);
+    // A source counts as covered only for meetings that actually yielded items (after the
+    // letterhead check and the splitter), not for links that led nowhere.
+    let readMeetings = 0;
     for (const lm of listed) {
       if (lm.agendaPublished === false) {
         // Scheduled, agenda not out yet: calendar only, nothing to read.
@@ -205,6 +208,7 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
       seenAgendas.add(lm.agendaUrl);
       const meetingId = sha256(`${source.sourceId}|${lm.date}|${lm.bodyName}`);
       const meeting: Meeting = { meetingId, sourceId: source.sourceId, body: lm.bodyName, role: source.role, date: lm.date, time: lm.time, location: lm.location, agendaUrl: lm.agendaUrl, documentHashes: [] };
+      const itemsBefore = items.length;
 
       if (lm.items) {
         // Platform API already gives numbered items; the agenda file is the citation target.
@@ -220,13 +224,20 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
         if (!agenda) continue;
         const { doc, text } = await readDocument(ctx, { ...agenda, meetingId });
         if (!doc.readable) continue;
+        const elsewhere = letterheadOtherState(text, state);
+        if (elsewhere) {
+          ctx.log(`skipped ${doc.url}: its letterhead is in ${elsewhere}, not ${state}`);
+          continue;
+        }
         meeting.documentHashes.push(doc.docHash);
         meeting.agendaUrl = doc.url;
         headers.set(meetingId, text.slice(0, 600));
         items.push(...splitAgenda(text, { meetingId, docHash: doc.docHash, docUrl: doc.url }, doc.pages));
       }
       meetings.push(meeting);
+      if (items.length > itemsBefore) readMeetings++;
     }
+    meetingsBySource.set(source.sourceId, readMeetings);
   }
   return { meetings, items, headers, meetingsBySource, sourcesUsed };
 }

@@ -1,7 +1,7 @@
 // Finds candidate agenda sources for one governing body from the place name alone (FR-004),
 // with two basic Tavily searches. Obvious non-official hosts are dropped here; deciding what is
 // official, right place and right body is the verify stage's job.
-import { cached } from "@/lib/store";
+import { cached, sha256 } from "@/lib/store";
 import { placeLabel } from "@/lib/places";
 import type { BodyRole, Candidate, Place } from "@/lib/schemas";
 import type { Ctx } from "../context";
@@ -25,7 +25,7 @@ export function queriesFor(place: Place, phrase: string, role: BodyRole): string
 export async function discover(ctx: Ctx, place: Place, body: { role: BodyRole; phrase: string }): Promise<Candidate[]> {
   return cached(
     ctx.kv,
-    `discover:${place.placeId}:${body.role}`,
+    `discover:${place.placeId}:${body.role}:${sha256(body.phrase).slice(0, 8)}`,
     async () => {
       const seen = new Map<string, Candidate>();
       for (const q of queriesFor(place, body.phrase, body.role)) {

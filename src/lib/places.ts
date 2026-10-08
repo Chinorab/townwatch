@@ -44,11 +44,32 @@ export function placeFromId(placeId: string, countyName?: string, official?: { n
   };
 }
 
+/** The county governing body has a state-specific official name: a public fact per state, not a
+ *  per-city setting (Franklin County, Arkansas was missed on 2026-10-08 because its "Quorum Court"
+ *  was searched as a "board of commissioners"). */
+const COUNTY_BODY_BY_STATE: Record<string, string> = {
+  AR: "quorum court",
+  KY: "fiscal court",
+  TX: "commissioners court",
+  LA: "police jury parish council",
+  VA: "board of supervisors",
+  MS: "board of supervisors",
+  IA: "board of supervisors",
+  CA: "board of supervisors",
+  WI: "county board of supervisors",
+  AZ: "board of supervisors",
+};
+
+export function countyBodyPhrase(place: Place): string {
+  if (/parish$/i.test(place.name)) return COUNTY_BODY_BY_STATE.LA;
+  return COUNTY_BODY_BY_STATE[place.state] ?? "board of commissioners county council";
+}
+
 /** Bodies covered per place kind (FR-004), with the phrase used to search for each. */
 export function bodiesFor(place: Place): { role: BodyRole; phrase: string }[] {
   if (place.kind === "county") {
     return [
-      { role: "county_executive", phrase: "board of commissioners county council" },
+      { role: "county_executive", phrase: countyBodyPhrase(place) },
       { role: "school_board", phrase: "board of education school board" },
       { role: "planning", phrase: "planning board planning commission" },
     ];

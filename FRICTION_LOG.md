@@ -50,6 +50,11 @@ Format: date, product, what happened, impact, suggestion.
   state and says a same-named place elsewhere is not the right place. It also accepted a city
   site (The Dalles) for the county. Fixed with a deterministic domain rule plus ranking; geography
   checks belong in code, not in a small model.
+- **2026-10-08 — Same-named places are the main failure mode of zero-configuration discovery.**
+  Beyond `*nc.gov` domains, Nano also accepted `mcohio.org` (Montgomery County, Ohio) for
+  Montgomery County, Georgia, and a Vernon, Connecticut school board for Vernon Parish, Louisiana
+  (the agenda letterhead read "Vernon, Connecticut 06066"). Two deterministic checks now run
+  after the model: state names in the domain, and the state in the document letterhead.
 - **2026-10-08 — Nano treats official agenda platforms as "external".** BoardDocs pages of real
   school districts were rejected with "redirects to external portal; not directly hosted by
   government body", despite the prompt listing BoardDocs as an official platform.

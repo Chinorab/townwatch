@@ -5,10 +5,12 @@ import { cached, sha256 } from "@/lib/store";
 import type { Source } from "@/lib/schemas";
 import type { Ctx } from "../context";
 import { inWindow, type ListedMeeting, type Reader, type Window } from "./types";
+import { readDocument } from "../stages/read";
 
 const MONTHS: Record<string, number> = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 // Lookarounds instead of \b: file names glue words with "_" ("Agenda _June 22 2026_Special").
-const MONTH_DATE = /(?<![a-z])(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?[\s_]+(\d{1,2})(?:st|nd|rd|th)?[\s_]*,?[\s_]*(20\d\d)(?!\d)/i;
+// File names also glue with dashes: "JULY-21-2026-MINUTES.pdf".
+const MONTH_DATE = /(?<![a-z])(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?[\s_-]+(\d{1,2})(?:st|nd|rd|th)?[\s_-]*,?[\s_-]*(20\d\d)(?!\d)/i;
 const NUM_DATE = /\b(\d{1,2})[/-](\d{1,2})[/-](20\d\d)\b/;
 const ISO_DATE = /\b(20\d\d)-(\d{2})-(\d{2})\b/;
 
@@ -33,6 +35,14 @@ export function dateFrom(s: string): string | null {
   return null;
 }
 
+const MONTH_YEAR = /(?<![a-z])(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s_.-]*(20\d\d)(?!\d)/i;
+
+/** "JULY-2026-AGENDA.pdf" → "2026-07": a month without a day, never turned into a date by guess. */
+export function monthFrom(s: string): string | null {
+  const m = s.match(MONTH_YEAR);
+  return m ? `${m[2]}-${String(MONTHS[m[1].toLowerCase()]).padStart(2, "0")}` : null;
+}
+
 export function docKind(label: string, href: string): "agenda" | "packet" | "minutes" {
   let file = href.split("?")[0].split("/").pop() ?? "";
   try {
@@ -50,7 +60,9 @@ const LINK = /\[([^\]]{1,200})\]\(([^)\s][^)]*?)\)/g;
 const DOCISH = /\.pdf|\.docx?\b|ViewFile|DocumentCenter|View\.ashx|AgendaCenter|agenda|minutes|packet/i;
 
 export interface ListingDoc {
+  /** YYYY-MM-DD, or "" when the link only gives a month (see `month`). */
   date: string;
+  month?: string;
   kind: "agenda" | "packet" | "minutes";
   label: string;
   urls: string[];
@@ -77,7 +89,8 @@ export function parseListing(markdown: string, baseUrl: string): ListingDoc[] {
     if (/^(mailto|tel|javascript):|^#/i.test(href) || /\.(png|jpe?g|gif|svg)(\?|$)/i.test(href)) continue;
     if (!DOCISH.test(`${label} ${href}`)) continue;
     const date = dateFrom(label) ?? dateFrom(decodeSafe(href));
-    if (!date) continue;
+    const month = date ? undefined : (monthFrom(label) ?? monthFrom(decodeSafe(href)) ?? undefined);
+    if (!date && !month) continue;
     let urls: string[];
     try {
       urls = candidates(href, baseUrl);
@@ -86,7 +99,7 @@ export function parseListing(markdown: string, baseUrl: string): ListingDoc[] {
     }
     if (seen.has(urls[0])) continue;
     seen.add(urls[0]);
-    out.push({ date, kind: docKind(label, href), label: label.trim(), urls });
+    out.push({ date: date ?? "", month, kind: docKind(label, href), label: label.trim(), urls });
   }
   return out;
 }
@@ -132,20 +145,55 @@ export function toMeetings(docs: ListingDoc[], bodyName: string, window: Window)
     });
 }
 
+/**
+ * Documents linked by month only ("JULY-2026-AGENDA.pdf", Vernon Parish, LA) get the exact date
+ * stated elsewhere in the record: another document of the same month ("JULY-21-2026-MINUTES")
+ * or the agenda's own letterhead. Never a guessed day; unresolved documents are dropped.
+ */
+async function resolveMonths(ctx: Ctx, docs: ListingDoc[], window: Window): Promise<ListingDoc[]> {
+  const dated = docs.filter((d) => d.date);
+  const monthOnly = docs.filter((d) => !d.date && d.month);
+  if (monthOnly.length === 0) return dated;
+  const byMonth = new Map<string, string>();
+  for (const d of [...dated].sort((a, b) => a.date.localeCompare(b.date))) byMonth.set(d.date.slice(0, 7), d.date);
+
+  const months = [...new Set(monthOnly.map((d) => d.month!))].sort().reverse();
+  const inWin = months.filter((m) => m >= window.from.slice(0, 7) && m <= window.to.slice(0, 7));
+  const resolved: ListingDoc[] = [];
+  for (const m of (inWin.length ? inWin : months.slice(0, 1)).slice(0, 2)) {
+    const group = monthOnly.filter((d) => d.month === m);
+    let date = byMonth.get(m);
+    if (!date) {
+      const agenda = group.find((d) => d.kind === "agenda") ?? group[0];
+      const { doc, text } = await readDocument(ctx, { urls: agenda.urls, kind: agenda.kind, meetingId: "listing" });
+      const found = doc.readable ? dateFrom(text.slice(0, 800)) : null;
+      if (found?.startsWith(m)) date = found;
+    }
+    if (date) resolved.push(...group.map((d) => ({ ...d, date: date! })));
+  }
+  return [...dated, ...resolved];
+}
+
 export const genericReader: Reader = {
   async list(ctx, source: Source, window) {
     const bodyName = source.verification.bodyName ?? source.role;
     let docs = parseListing(await extractPage(ctx, source.url), source.url);
 
     if (docs.length === 0) {
-      // One hop deeper: the found page links to the actual agendas page.
+      // One hop deeper: the found page links to the actual agendas page. Pages for the current
+      // year first (Sussex County, VA keeps one agendas page per year).
       const host = new URL(source.url).host;
       const links = await cached(ctx.kv, `map:${sha256(source.url)}`, () =>
         ctx.tavily.map(source.url, { instructions: "pages that list meeting agendas and minutes", limit: 30 }),
       );
-      const hops = links.filter((u) => u !== source.url && new URL(u).host === host && /agenda|minute|meeting/i.test(u)).slice(0, 2);
+      const year = ctx.now.getUTCFullYear();
+      const score = (u: string) => (u.includes(String(year)) ? 2 : u.includes(String(year - 1)) ? 1 : 0);
+      const hops = links
+        .filter((u) => u !== source.url && new URL(u).host === host && /agenda|minute|meeting/i.test(u))
+        .sort((a, b) => score(b) - score(a))
+        .slice(0, 2);
       for (const u of hops) docs = docs.concat(parseListing(await extractPage(ctx, u), u));
     }
-    return toMeetings(docs, bodyName, window);
+    return toMeetings(await resolveMonths(ctx, docs, window), bodyName, window);
   },
 };

@@ -3,7 +3,7 @@
 // .com, and same-named places in other states on .gov.
 import { z } from "zod";
 import { cached } from "@/lib/store";
-import { placeLabel, STATE_NAMES } from "@/lib/places";
+import { countyBodyPhrase, placeLabel, STATE_NAMES } from "@/lib/places";
 import { Verification, type BodyRole, type Candidate, type Place, type Source } from "@/lib/schemas";
 import { sha256 } from "@/lib/store";
 import type { Ctx } from "../context";
@@ -38,6 +38,14 @@ function describePlace(place: Place, role: BodyRole): string {
   return `${placeLabel(place)} (${place.kind})`;
 }
 
+/** States whose county body has its own official name get it in the prompt (Quorum Court,
+ *  Police Jury...); others keep the default wording. */
+function bodyText(place: Place, role: BodyRole): string {
+  if (role !== "county_executive" || place.kind !== "county") return ROLE_TEXT[role];
+  const phrase = countyBodyPhrase(place);
+  return phrase === "board of commissioners county council" ? ROLE_TEXT[role] : `the ${phrase} (main elected governing body of the ${/parish$/i.test(place.name) ? "parish" : "county"})`;
+}
+
 const AGENDA_PAGE = /agenda|minutes/i;
 const ROLE_URL: Record<BodyRole, RegExp> = {
   executive: /council|aldermen|selectmen/i,
@@ -52,19 +60,54 @@ const BODY_PAGE = /meeting|board|council|commission/i;
  *  because the model accepted both on 2026-10-08. */
 export function otherStateHost(url: string, state: string): string | null {
   const host = new URL(url).hostname.toLowerCase();
-  for (const code of Object.keys(STATE_NAMES)) {
+  const squashed = host.replace(/[^a-z]/g, "");
+  const own = STATE_NAMES[state]?.toLowerCase().replace(/[^a-z]/g, "");
+  for (const [code, name] of Object.entries(STATE_NAMES)) {
+    if (code === state) continue;
     const s = code.toLowerCase();
-    if (s === state.toLowerCase()) continue;
-    if (new RegExp(`(county|\\.)${s}\\.(gov|us)$`).test(host)) return code;
+    // "franklincotn.us" is Tennessee, "franklincoks.org" Kansas, "cumberlandcountync.gov" North Carolina
+    if (new RegExp(`(county|co|\\.)${s}\\.(gov|us|org|com|net)$`).test(host)) return code;
+    // Full state names too ("mcohio.org" is Montgomery County, Ohio), unless the host carries the
+    // place's own state name (a "kansas" inside "arkansas" is not Kansas).
+    const full = name.toLowerCase().replace(/[^a-z]/g, "");
+    if (full.length >= 4 && squashed.includes(full) && !(own && squashed.includes(own) && own.includes(full))) return code;
   }
   return null;
 }
 
+/** A domain built on another county's name ("salinecounty.org" for Franklin County, Arkansas;
+ *  "rockinghamcountync.gov" for Edgecombe County) belongs to that county. */
+export function otherCountyHost(url: string, nameToken: string): string | null {
+  if (nameToken.length < 4) return null;
+  const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+  if (host.replace(/[^a-z]/g, "").includes(nameToken)) return null;
+  const m = host.match(/^([a-z]{4,})(?:county|parish)/) ?? host.match(/^co\.([a-z]{4,})\./);
+  return m ? m[1] : null;
+}
+
+function placeToken(place: Place, role: BodyRole): string {
+  return (role === "county_executive" && place.kind === "town" ? (place.countyName ?? "") : place.name)
+    .toLowerCase()
+    .replace(/ (county|parish|borough)$/, "")
+    .replace(/[^a-z]/g, "");
+}
+
 export async function verify(ctx: Ctx, place: Place, role: BodyRole, all: Candidate[]): Promise<VerifyResult> {
+  const token = placeToken(place, role);
   const foreign = all.filter((c) => otherStateHost(c.url, place.state));
   const candidates = all.filter((c) => !foreign.includes(c));
   const result = await verifyCandidates(ctx, place, role, candidates);
-  return { ...result, rejected: [...foreign.map((c) => ({ url: c.url, reason: `domain of another state (${otherStateHost(c.url, place.state)})` })), ...result.rejected] };
+  // Applied after the model so its prompt (and the cache) is unchanged: the model may accept a
+  // neighbouring county's site, the domain rule overrides it.
+  const otherCounty = result.accepted.filter((s) => otherCountyHost(s.url, token));
+  return {
+    accepted: result.accepted.filter((s) => !otherCounty.includes(s)),
+    rejected: [
+      ...foreign.map((c) => ({ url: c.url, reason: `domain of another state (${otherStateHost(c.url, place.state)})` })),
+      ...otherCounty.map((s) => ({ url: s.url, reason: `domain of another county (${otherCountyHost(s.url, token)})` })),
+      ...result.rejected,
+    ],
+  };
 }
 
 async function verifyCandidates(ctx: Ctx, place: Place, role: BodyRole, candidates: Candidate[]): Promise<VerifyResult> {
@@ -72,7 +115,7 @@ async function verifyCandidates(ctx: Ctx, place: Place, role: BodyRole, candidat
   const top = candidates.slice(0, 6);
   return cached(ctx.kv, `verify3:${ctx.models.config.fast}:${sha256(place.placeId + role + top.map((c) => c.url).join("|"))}`, async () => {
     const user =
-      `Place: ${describePlace(place, role)}\nBody: ${ROLE_TEXT[role]}\nCandidates:\n` +
+      `Place: ${describePlace(place, role)}\nBody: ${bodyText(place, role)}\nCandidates:\n` +
       top.map((c, i) => `${i + 1}. url: ${c.url}\n   title: ${c.title}\n   snippet: ${c.snippet.replace(/\s+/g, " ")}`).join("\n");
     let verdicts: Verification[] = [];
     try {

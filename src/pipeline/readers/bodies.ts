@@ -4,7 +4,7 @@ import type { BodyRole } from "@/lib/schemas";
 
 const ROLE: Record<BodyRole, RegExp> = {
   executive: /\b(city|town|village|borough)? ?council\b|board of (aldermen|selectmen|trustees)|city commission/i,
-  county_executive: /board of (county )?commissioners|county commission|county council|board of supervisors|fiscal court|commissioners court/i,
+  county_executive: /board of (county )?commissioners|county commission|county council|board of supervisors|fiscal court|commissioners court|police jury|parish council|parish commission|quorum court/i,
   school_board: /board of education|school board|school committee|board of trustees.*school/i,
   planning: /planning|zoning/i,
 };

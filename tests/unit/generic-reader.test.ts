@@ -104,3 +104,28 @@ describe("CivicPlus AgendaCenter links", () => {
     expect(docs[0].urls[0]).toBe("https://co.caroline.va.us/AgendaCenter/ViewFile/Agenda/_09242026-569");
   });
 });
+
+describe("month-only agenda links (Vernon Parish, LA)", () => {
+  const listing = [
+    "[Agenda](https://vernonparish.org/wp-content/uploads/2026/07/JULY-2026-AGENDA.pdf)",
+    "[Minutes](https://vernonparish.org/wp-content/uploads/2026/07/JULY-21-2026-MINUTES.pdf)",
+    "[Agenda](https://vernonparish.org/wp-content/uploads/2026/07/JUN-2026-AGENDA.pdf)",
+  ].join("\n");
+
+  it("keeps the month without inventing a day", () => {
+    const docs = parseListing(listing, "https://vernonparish.org/about-us/agendas-minutes");
+    expect(docs.find((d) => /JULY-2026-AGENDA/.test(d.urls[0]))).toMatchObject({ date: "", month: "2026-07", kind: "agenda" });
+  });
+
+  it("dates the agenda from the same month's minutes, and drops months it cannot date", async () => {
+    const { genericReader } = await import("@/pipeline/readers/generic");
+    const ctx = testContext({
+      tavily: { credits: 0, search: async () => [], map: async () => [], extract: async (urls) => ({ results: [{ url: urls[0], raw_content: listing }], failed: [] }) },
+      fetcher: async () => ({ status: 404, contentType: "text/html", bytes: new Uint8Array() }),
+    });
+    const src = { sourceId: "s", role: "county_executive", url: "https://vernonparish.org/about-us/agendas-minutes", host: "vernonparish.org", platform: "generic", platformKey: null, verification: { url: "", official: true, rightPlace: true, rightBody: true, confidence: 1, reason: "", bodyName: "Police Jury" }, accepted: true, checkedAt: "" } as const;
+    const meetings = await genericReader.list(ctx, src as never, { from: "2026-09-24", to: "2026-10-29" });
+    expect(meetings.map((m) => m.date)).toEqual(["2026-07-21"]);
+    expect(meetings[0].docs.map((d) => d.kind).sort()).toEqual(["agenda", "minutes"]);
+  });
+});
