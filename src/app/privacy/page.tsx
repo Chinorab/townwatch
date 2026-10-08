@@ -20,8 +20,28 @@ export default function Privacy() {
 
       <h2>Your address</h2>
       <p>
-        If a feature asks for your address, it stays in your browser. Townwatch&rsquo;s servers never receive it. This page will say exactly which
-        public service turns it into a map position before that feature goes live.
+        &ldquo;Near you&rdquo; can use your street address. Your browser sends it directly to the{" "}
+        <a href="https://geocoding.geo.census.gov/geocoder/">US Census Bureau geocoder</a>, a free public service, which returns a map position.
+        Townwatch&rsquo;s servers never receive the address or the position. Distances are computed in your browser and forgotten when you leave
+        the page.
+      </p>
+      <p>
+        If you prefer, drop a pin on a map instead: no address is used at all. The map images come from{" "}
+        <a href="https://openfreemap.org">OpenFreeMap</a>, which sees which area of the map is displayed, like any map service.
+      </p>
+
+      <h2>Places named in agendas</h2>
+      <p>
+        To place agenda items on the map, Townwatch looks up the roads and sites named in the public record with{" "}
+        <a href="https://nominatim.openstreetmap.org">OpenStreetMap Nominatim</a>. These lookups contain public record text only, never anything
+        about you.
+      </p>
+
+      <h2>Limits on new places</h2>
+      <p>
+        To keep the service free, each visitor can start one new place per day. To count this without knowing who you are, Townwatch keeps a
+        scrambled code made from your network address and a random value that changes every day. The code cannot be turned back into the address
+        and is deleted after 24 hours.
       </p>
 
       <h2>Hosting</h2>

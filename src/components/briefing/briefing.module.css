@@ -299,3 +299,22 @@
     font-size: 14px;
   }
 }
+
+/* Topic filter: square tabs, never pills */
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  padding-top: var(--s5);
+}
+.topic {
+  border: 1px solid var(--ink);
+  padding: var(--s1) var(--s3);
+  font-size: 15px;
+  text-decoration: none;
+}
+.topic:hover,
+.topic[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+}

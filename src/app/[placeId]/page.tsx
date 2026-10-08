@@ -10,6 +10,10 @@ import { Story } from "@/components/briefing/Story";
 import { AlsoOnAgenda } from "@/components/briefing/AlsoOnAgenda";
 import { longDate, ROLE_LABEL } from "@/components/briefing/format";
 import styles from "@/components/briefing/briefing.module.css";
+import { TopicFilter } from "@/components/briefing/TopicFilter";
+import { NearYou, type LocatedItem } from "@/components/near/NearYou";
+import { citeHref } from "@/components/briefing/format";
+import { TOPICS, type Briefing, type Topic } from "@/lib/schemas";
 
 export async function generateMetadata(props: PageProps<"/[placeId]">): Promise<Metadata> {
   const b = await getBriefing((await props.params).placeId);
@@ -20,7 +24,7 @@ export async function generateMetadata(props: PageProps<"/[placeId]">): Promise<
 export default function PlacePage(props: PageProps<"/[placeId]">) {
   return (
     <Suspense fallback={<BriefingSkeleton />}>
-      <BriefingView params={props.params} />
+      <BriefingView params={props.params} searchParams={props.searchParams} />
     </Suspense>
   );
 }
@@ -37,8 +41,10 @@ function BriefingSkeleton() {
   );
 }
 
-async function BriefingView({ params }: { params: Promise<{ placeId: string }> }) {
+async function BriefingView({ params, searchParams }: { params: Promise<{ placeId: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { placeId } = await params;
+  const raw = (await searchParams).topic;
+  const topic = typeof raw === "string" && (TOPICS as readonly string[]).includes(raw) ? (raw as Topic) : null;
   const b = await getBriefing(placeId);
   if (!b) {
     const p = lookupPlace(placeId);
@@ -54,7 +60,13 @@ async function BriefingView({ params }: { params: Promise<{ placeId: string }> }
     );
   }
 
-  const [lead, ...rest] = b.headlineItems;
+  const counts: Partial<Record<Topic, number>> = {};
+  for (const t of [...b.headlineItems.map((h) => h.item.triage?.topic), ...b.alsoOnAgenda.map((a) => a.topic)]) if (t) counts[t] = (counts[t] ?? 0) + 1;
+  const shown: Briefing = topic
+    ? { ...b, headlineItems: b.headlineItems.filter((h) => h.item.triage?.topic === topic), alsoOnAgenda: b.alsoOnAgenda.filter((a) => a.topic === topic) }
+    : b;
+  const [lead, ...rest] = shown.headlineItems;
+  const centre = lookupPlace(b.placeId);
   const covered = b.bodies.filter((x) => x.coverage === "covered");
   const missing = b.bodies.filter((x) => x.coverage !== "covered");
 
@@ -76,6 +88,8 @@ async function BriefingView({ params }: { params: Promise<{ placeId: string }> }
         </p>
       </header>
 
+      <div id="stories" />
+      <TopicFilter placeId={b.placeId} counts={counts} active={topic} />
       {lead ? (
         <div className={styles.front}>
           <Story h={lead} lead windowFrom={b.window.from} />
@@ -88,10 +102,16 @@ async function BriefingView({ params }: { params: Promise<{ placeId: string }> }
           )}
         </div>
       ) : (
-        <p className={styles.empty}>No decision needing explanation was found on the agendas currently online. Every item is listed below as written.</p>
+        <p className={styles.empty}>
+          {topic
+            ? "No explained decision on this topic. Items on this topic, if any, are listed below as written."
+            : "No decision needing explanation was found on the agendas currently online. Every item is listed below as written."}
+        </p>
       )}
 
-      <AlsoOnAgenda b={b} />
+      <AlsoOnAgenda b={shown} />
+
+      {centre && <NearYou placeName={b.placeName} stateCode={b.state} centre={{ lat: centre.lat, lon: centre.lon }} located={locatedItems(b)} />}
 
       <section className={styles.coverage} aria-labelledby="coverage-title">
         <h2 id="coverage-title" className={styles.sectionTitle}>
@@ -123,4 +143,27 @@ async function BriefingView({ params }: { params: Promise<{ placeId: string }> }
       </section>
     </div>
   );
+}
+
+/** Joins located places with the items that mention them, for the client-side Near you list. */
+function locatedItems(b: Briefing): LocatedItem[] {
+  const meetings = new Map(b.meetings.map((m) => [m.meetingId, m]));
+  const info = new Map<string, Omit<LocatedItem, "id" | "lat" | "lon" | "placeText">>();
+  for (const h of b.headlineItems) {
+    info.set(h.item.itemHash, {
+      number: h.item.number,
+      title: h.explanation.headline?.text ?? h.item.title,
+      meetingBody: h.meeting.body,
+      meetingDate: h.meeting.date,
+      href: citeHref({ docUrl: h.item.docUrl, page: h.item.page }),
+    });
+  }
+  for (const a of b.alsoOnAgenda) {
+    const m = meetings.get(a.meetingId);
+    if (a.itemHash && m) info.set(a.itemHash, { number: a.number, title: a.title, meetingBody: m.body, meetingDate: m.date, href: citeHref(a) });
+  }
+  return b.locatedItems.flatMap((l) => {
+    const i = info.get(l.itemHash);
+    return i ? [{ id: l.itemHash, lat: l.lat, lon: l.lon, placeText: l.placeText, ...i }] : [];
+  });
 }

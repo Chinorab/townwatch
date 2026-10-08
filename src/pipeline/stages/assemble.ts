@@ -54,7 +54,7 @@ export function assemble(x: AssembleInput): Briefing {
     if (!meeting) continue;
     const e = x.explanations.get(item.itemHash);
     if (item.routing?.escalate && e && e.statements.length > 0) headlineItems.push({ item, meeting, explanation: e });
-    else alsoOnAgenda.push({ number: item.number, title: item.title, docUrl: item.docUrl, page: item.page, meetingId: item.meetingId, reason: item.routing?.reason ?? "info_only" });
+    else alsoOnAgenda.push({ number: item.number, title: item.title, docUrl: item.docUrl, page: item.page, meetingId: item.meetingId, reason: item.routing?.reason ?? "info_only", topic: item.triage?.topic, itemHash: item.itemHash });
   }
 
   // Editorial order: this period's meetings first (an older "latest agenda online" never leads),

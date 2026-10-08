@@ -133,15 +133,15 @@ distance; network inspection shows the address only in the Census JSONP request.
 
 ### Tests for User Story 3
 
-- [ ] T053 [P] [US3] Distance and ranking tests (haversine, outside-area case, no nearby items) in tests/unit/near.test.ts
+- [X] T053 [P] [US3] Distance and ranking tests (haversine, outside-area case, no nearby items) in tests/unit/near.test.ts
 - [ ] T054 [P] [US3] Playwright privacy check: enter an address, assert no request to the app origin contains any part of it, in tests/e2e/privacy.spec.ts
 
 ### Implementation for User Story 3
 
-- [ ] T055 [P] [US3] Implement `locate` (Census for street addresses, Nominatim for roads and landmarks, 1 req/s, contact user agent, cached per text) in src/pipeline/stages/locate.ts and add it to src/pipeline/run.ts
-- [ ] T056 [P] [US3] Implement browser geocoding by JSONP to the Census geocoder in src/client/geocode.ts
-- [ ] T057 [P] [US3] Implement the drop-a-pin map (MapLibre GL, OpenFreeMap tiles, no key) in src/components/near/PinMap.tsx
-- [ ] T058 [US3] Build the "Near you" section and topic filters (state kept in the browser only, localStorage optional) in src/components/near/ and src/components/briefing/TopicFilter.tsx
+- [X] T055 [P] [US3] Implement `locate` (Census for street addresses, Nominatim for roads and landmarks, 1 req/s, contact user agent, cached per text) in src/pipeline/stages/locate.ts and add it to src/pipeline/run.ts
+- [X] T056 [P] [US3] Implement browser geocoding by JSONP to the Census geocoder in src/client/geocode.ts
+- [X] T057 [P] [US3] Implement the drop-a-pin map (MapLibre GL, OpenFreeMap tiles, no key) in src/components/near/PinMap.tsx
+- [X] T058 [US3] Build the "Near you" section and topic filters (state kept in the browser only, localStorage optional) in src/components/near/ and src/components/briefing/TopicFilter.tsx
 
 ---
 
@@ -182,8 +182,8 @@ cached views say they cost nothing new.
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T066 [P] Privacy page (address handling, Census geocoder, pin option, visitor counters, no accounts) in src/app/privacy/page.tsx
-- [ ] T067 [P] Favicon and app icon (no AI imagery) in src/app/icon.svg
+- [X] T066 [P] Privacy page (address handling, Census geocoder, pin option, visitor counters, no accounts) in src/app/privacy/page.tsx
+- [X] T067 [P] Favicon and app icon (no AI imagery) in src/app/icon.svg
 - [ ] T068 [P] Copy pass on every UI string: no dashes, no emojis, no generic AI copy, no AI mentions, in src/components/ and src/app/
 - [ ] T069 Accessibility and design audit with web-design-guidelines and Playwright (WCAG AA contrast, keyboard, focus, mobile) and fixes, in tests/e2e/a11y.spec.ts
 - [ ] T070 Deploy to Vercel with env vars and Upstash Redis, run `npm run check:secrets` on the build, pre-analyse the demo places in production

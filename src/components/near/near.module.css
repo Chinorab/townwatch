@@ -1,0 +1,127 @@
+.near {
+  padding-top: var(--s7);
+}
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  border-top: 3px double var(--ink);
+  padding-top: var(--s4);
+}
+.dek {
+  color: var(--ink-2);
+  margin: var(--s2) 0 var(--s5);
+  font-size: 18px;
+  max-width: 62ch;
+}
+.form {
+  max-width: 760px;
+}
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--s2);
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s3);
+}
+.input {
+  font: inherit;
+  font-size: 19px;
+  padding: var(--s3) var(--s4);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  min-width: 0;
+}
+.input::placeholder {
+  color: var(--ink-2);
+  opacity: 1;
+}
+.button {
+  font: inherit;
+  font-weight: 600;
+  padding: var(--s3) var(--s5);
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.button:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+.button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.help {
+  margin-top: var(--s2);
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+.linkButton {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.map,
+.mapLoading {
+  margin-top: var(--s4);
+  height: 360px;
+  max-width: 760px;
+  border: 1px solid var(--ink);
+}
+.mapLoading {
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+}
+.message,
+.error {
+  margin-top: var(--s5);
+  font-size: 18px;
+}
+.error {
+  color: var(--accent);
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: var(--s3) 0 0;
+  border-top: 1px solid var(--ink);
+  max-width: 860px;
+}
+.list li {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  gap: var(--s4);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.distance {
+  display: inline-flex;
+  gap: var(--s1);
+  align-items: center;
+  font-weight: 600;
+}
+.meta {
+  display: block;
+  color: var(--ink-2);
+  font-size: 15px;
+  margin-top: 2px;
+}
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

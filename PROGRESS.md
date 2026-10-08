@@ -74,7 +74,19 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   Demo briefings cached: nc-edgecombe-county ($0.075), ga-columbia-county (web flow, Oct 6 meeting, pages on
   all 16 citations, ~$0.18 incl. a first run on the wrong meeting), mi-ann-arbor (council + Washtenaw county,
   $0.16). Washtenaw has 12 news sources per Medill (comparison line on home).
-- [ ] T052 SC-004 running: scripts/sc004.ts → research/sc004.md (Wasco + 10 sampled counties).
+- [x] T052 SC-004 measured (research/sc004.md; run 1 kept as sc004-run1.md): run 1 = 2/11, after generic fixes
+  run 2 = 6/11 (Wasco, Asotin, Caroline, Cumberland, Franklin AR, Powell KY), $0.20 total. Target 7/10 NOT met yet.
+  Remaining causes: Louisiana "Police Jury"/parish council not in role words (Vernon Parish), agendas posted as
+  news articles (Lincoln CO), Montgomery GA read but 0 items (to inspect), Hartley TX / Sussex VA nothing found.
+  Fixes done for run 2: other-state domain rule, own-domain ranking, body-named URL ranking, alternates (second
+  chance), CivicPlus `_MMDDYYYY` dates + PDF preference + "4.II." line numbering, agenda dedupe across bodies,
+  per-source error isolation. FRICTION_LOG updated (Nano accepts other-state domains, rejects BoardDocs).
+- [x] US3 (2026-10-08): locate stage (Nominatim, 1 req/s, cached, within 45 mi, parcel refs dropped), browser
+  Census JSONP geocoding, MapLibre 6 + OpenFreeMap positron pin map (lazy), Near you (nearest mention per item,
+  10 mi radius, outside-area / none-nearby states), topic filter via ?topic= (server, square tabs), favicon
+  (src/app/icon.svg), privacy page names Census, OpenFreeMap, Nominatim, visitor hash. SC-007 verified in the
+  browser: address only in the census.gov request. 96 tests. T054 e2e spec written, not run (sandbox).
+- NEXT: US4 calendar + take part, US5 panel; then SC-004 remaining causes; then deploy (T070) by 25 Oct.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.
 

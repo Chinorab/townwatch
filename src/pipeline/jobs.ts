@@ -13,6 +13,8 @@ import { route } from "./stages/route";
 import { draftKey, explainAll, type ExplainInput } from "./stages/explain";
 import { ground } from "./stages/ground";
 import { assemble, totalsOf } from "./stages/assemble";
+import { locateItems } from "./stages/locate";
+import { lookupPlace } from "@/lib/place-index";
 import { windowFor } from "./readers/types";
 import type { ExplanationDraft } from "@/lib/schemas";
 
@@ -137,7 +139,9 @@ async function step(ctx: Ctx, a: Analysis): Promise<void> {
     case "assembling": {
       const found = (await ctx.kv.get<SourcesResult>(k(id, "found")))!;
       const read = (await ctx.kv.get<ReadState>(k(id, "read")))!;
-      const routed = (await ctx.kv.get<AgendaItem[]>(k(id, "items")))!;
+      const indexed = lookupPlace(place.placeId);
+      const triaged = (await ctx.kv.get<AgendaItem[]>(k(id, "items")))!;
+      const routed = indexed ? await locateItems(ctx, { name: place.name, state: place.state, centre: { lat: indexed.lat, lon: indexed.lon } }, triaged) : triaged;
       const explanations = new Map<string, Explanation>();
       for (const input of await explainInputs(ctx, id, place)) {
         const d = await ctx.kv.get<{ draft: ExplanationDraft; model: string }>(draftKey(ctx, input.item.itemHash));

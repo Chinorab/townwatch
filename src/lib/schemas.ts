@@ -255,7 +255,7 @@ export const Briefing = z.object({
   window: z.object({ from: z.string(), to: z.string() }),
   headlineItems: z.array(HeadlineItem),
   alsoOnAgenda: z.array(
-    z.object({ number: z.string(), title: z.string(), docUrl: z.string(), page: z.number().int().nullable(), meetingId: z.string(), reason: RoutingReason }),
+    z.object({ number: z.string(), title: z.string(), docUrl: z.string(), page: z.number().int().nullable(), meetingId: z.string(), reason: RoutingReason, topic: Topic.optional(), itemHash: z.string().optional() }),
   ),
   meetings: z.array(Meeting),
   bodies: z.array(BodyRef),
