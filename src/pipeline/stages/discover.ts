@@ -1,0 +1,41 @@
+// Finds candidate agenda sources for one governing body from the place name alone (FR-004),
+// with two basic Tavily searches. Obvious non-official hosts are dropped here; deciding what is
+// official, right place and right body is the verify stage's job.
+import { cached } from "@/lib/store";
+import { placeLabel } from "@/lib/places";
+import type { BodyRole, Candidate, Place } from "@/lib/schemas";
+import type { Ctx } from "../context";
+
+const NOT_OFFICIAL_HOST =
+  /(^|\.)(facebook|fb|twitter|x|instagram|linkedin|youtube|tiktok|reddit|wikipedia|ballotpedia|patch|yelp|nextdoor|mapquest|indeed|glassdoor|zillow|countyoffice|govserv|opengovus|citydata|city-data)\.|news|times|herald|gazette|journal|tribune|courier|observer|post\b|press|daily|weekly|radio|tv\b/i;
+
+export function isExcludedHost(url: string): boolean {
+  try {
+    return NOT_OFFICIAL_HOST.test(new URL(url).hostname);
+  } catch {
+    return true;
+  }
+}
+
+export function queriesFor(place: Place, phrase: string, role: BodyRole): string[] {
+  const where = role === "county_executive" && place.kind === "town" && place.countyName ? `${place.countyName}, ${place.stateName}` : placeLabel(place);
+  return [`${where} ${phrase} meeting agenda`, `${where.replace(`, ${place.stateName}`, ` ${place.state}`)} ${phrase} agendas minutes`];
+}
+
+export async function discover(ctx: Ctx, place: Place, body: { role: BodyRole; phrase: string }): Promise<Candidate[]> {
+  return cached(
+    ctx.kv,
+    `discover:${place.placeId}:${body.role}`,
+    async () => {
+      const seen = new Map<string, Candidate>();
+      for (const q of queriesFor(place, body.phrase, body.role)) {
+        for (const r of await ctx.tavily.search(q, { maxResults: 10 })) {
+          if (isExcludedHost(r.url) || seen.has(r.url)) continue;
+          seen.set(r.url, { role: body.role, url: r.url, title: r.title ?? "", snippet: (r.content ?? "").slice(0, 300), score: r.score ?? 0 });
+        }
+      }
+      return [...seen.values()].sort((a, b) => b.score - a.score).slice(0, 8);
+    },
+    30 * 86_400,
+  );
+}

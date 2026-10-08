@@ -1,0 +1,112 @@
+/* Townwatch: editorial civic briefing. Tokens and rationale in docs/design.md. */
+:root {
+  --paper: #fafaf8;
+  --ink: #16181d;
+  --ink-2: #4a4f59;
+  --rule: #d9d9d4;
+  --accent: #a8232c;
+  --focus: #1d4ed8;
+  --measure: 66ch;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 72px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #121417;
+    --ink: #ecebe6;
+    --ink-2: #b4b7bd;
+    --rule: #2c3036;
+    --accent: #f0858b;
+    --focus: #8ab4ff;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 19px;
+  line-height: 1.55;
+  font-feature-settings: "tnum" 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--s5);
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    padding: 0 var(--s4);
+  }
+  body {
+    font-size: 18px;
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "annarbor-legistar-events.json": {
+    "url": "https://webapi.legistar.com/v1/a2gov/events?$filter=EventDate+ge+datetime'2026-09-24'+and+EventDate+lt+datetime'2026-10-30'&$orderby=EventDate",
+    "retrievedAt": "2026-10-08T13:49:05.534Z"
+  },
+  "annarbor-legistar-eventitems-14160.json": {
+    "url": "https://webapi.legistar.com/v1/a2gov/events/14160/eventitems?AgendaNote=1&Attachments=1",
+    "retrievedAt": "2026-10-08T13:49:05.534Z"
+  },
+  "columbia-civicclerk-events.json": {
+    "url": "https://columbiacoga.api.civicclerk.com/v1/Events?$filter=startDateTime%20ge%202026-09-01T00:00:00Z%20and%20startDateTime%20le%202026-10-31T00:00:00Z&$orderby=startDateTime",
+    "retrievedAt": "2026-10-08T13:49:05.534Z"
+  },
+  "columbia-civicclerk-meeting-3463.json": {
+    "url": "https://columbiacoga.api.civicclerk.com/v1/Meetings/3463",
+    "retrievedAt": "2026-10-08T13:49:05.534Z"
+  },
+  "columbia-civicclerk-agenda-13850.pdf": {
+    "url": "https://columbiacoga.api.civicclerk.com/v1/Meetings/GetMeetingFileStream(fileId=13850,plainText=false)",
+    "retrievedAt": "2026-10-08T13:49:05.534Z"
+  },
+  "edgecombe-agenda-2026-10-05.md": {
+    "url": "https://www.edgecombecountync.gov/Commissioners/Agendas/2026/00.%20Regular%20Board%20Meeting%20Agenda%20_October%205%202026_%20FINAL.pdf",
+    "retrievedAt": "2026-10-08T00:00:00Z",
+    "via": "tavily_extract"
+  },
+  "edgecombe-agendas-listing.md": {
+    "url": "https://www.edgecombecountync.gov/residents/agendas.php",
+    "retrievedAt": "2026-10-08T00:00:00Z",
+    "via": "tavily_extract"
+  },
+  "edgecombe-boe-agenda-2026-09-14.txt": {
+    "url": "https://4.files.edl.io/5714/09/10/26/204008-860c9f69-35bb-4c33-8635-f55fbf2cf97a.pdf",
+    "retrievedAt": "2026-10-08T13:59:25.959Z",
+    "via": "direct (unpdf, per page)"
+  }
+}

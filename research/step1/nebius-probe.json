@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-08T13:05:25.378Z",
+  "catalogue": [
+    "MiniMaxAI/MiniMax-M3",
+    "NousResearch/Hermes-4-405B",
+    "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "Qwen/Qwen3-Embedding-8B",
+    "Qwen/Qwen3.5-397B-A17B",
+    "Qwen/Qwen3.8-27B",
+    "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "deepseek-ai/DeepSeek-V4-Pro",
+    "deepseek-ai/DeepSeek-V4-Pro-0813",
+    "deepseek-ai/DeepSeek-V4.1-Flash",
+    "google/gemma-3-27b-it",
+    "moonshotai/Kimi-K2.6",
+    "moonshotai/Kimi-K2.7-Code",
+    "moonshotai/Kimi-K3",
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+    "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "nvidia/Nemotron-3_5-Lightning",
+    "nvidia/nemotron-3-super-120b-a12b",
+    "openai/gpt-oss-120b",
+    "openbmb/MiniCPM-V-4_5",
+    "zai-org/GLM-5.1",
+    "zai-org/GLM-5.2",
+    "zai-org/GLM-5.3",
+    "zai-org/GLM-5.3-Flash"
+  ],
+  "nvidia": [
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+    "nvidia/Nemotron-3-Ultra-550b-a55b",
+    "nvidia/Nemotron-3_5-Lightning",
+    "nvidia/nemotron-3-super-120b-a12b"
+  ],
+  "calls": [
+    {
+      "tier": "nano",
+      "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "ms": 244,
+      "usage": {
+        "completion_tokens": 11,
+        "prompt_tokens": 76,
+        "total_tokens": 87,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null
+      },
+      "content": "{\"topic\":\"roads\",\"decision\":true}",
+      "hasReasoningField": false
+    },
+    {
+      "tier": "lightning",
+      "model": "nvidia/Nemotron-3_5-Lightning",
+      "ms": 217,
+      "usage": {
+        "completion_tokens": 13,
+        "prompt_tokens": 76,
+        "total_tokens": 89,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": null,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null
+        },
+        "prompt_tokens_details": null,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 76
+      },
+      "content": "{\"topic\": \"roads\", \"decision\": true}",
+      "hasReasoningField": false
+    },
+    {
+      "tier": "super",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "ms": 293,
+      "usage": {
+        "completion_tokens": 13,
+        "prompt_tokens": 76,
+        "total_tokens": 89,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": null,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 76
+      },
+      "content": "{\"topic\": \"roads\", \"decision\": false}",
+      "hasReasoningField": false
+    },
+    {
+      "tier": "ultra",
+      "model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+      "ms": 4049,
+      "usage": {
+        "completion_tokens": 699,
+        "prompt_tokens": 76,
+        "total_tokens": 775,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": null,
+          "reasoning_tokens": 685,
+          "rejected_prediction_tokens": null
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 76
+      },
+      "content": "{\"topic\": \"roads\", \"decision\": true}",
+      "hasReasoningField": true
+    }
+  ]
+}

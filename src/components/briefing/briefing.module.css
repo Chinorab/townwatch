@@ -1,0 +1,301 @@
+/* Briefing page: a local newspaper front. Rules instead of cards, columns instead of tiles. */
+
+.masthead {
+  padding: var(--s7) 0 var(--s5);
+  border-bottom: 3px double var(--ink);
+}
+.dateline {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  font-size: 15px;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s5);
+}
+.title {
+  font-size: clamp(42px, 7vw, 84px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+.dek {
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  max-width: 52ch;
+  margin-top: var(--s4);
+}
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  margin-top: var(--s5);
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+.icon {
+  flex: none;
+  margin-top: 3px;
+}
+
+/* Front page */
+.front {
+  padding-top: var(--s6);
+}
+.lead {
+  padding-bottom: var(--s6);
+  border-bottom: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: var(--s7);
+  grid-template-areas:
+    "kicker kicker"
+    "headline headline"
+    "body facts"
+    "record facts";
+}
+.lead .kicker {
+  grid-area: kicker;
+}
+.lead .leadHeadline {
+  grid-area: headline;
+}
+.lead .body {
+  grid-area: body;
+}
+.lead .facts {
+  grid-area: facts;
+  align-self: start;
+  margin-top: var(--s4);
+}
+.lead .record {
+  grid-area: record;
+}
+.leadHeadline {
+  font-size: clamp(32px, 4.6vw, 54px);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin: var(--s2) 0 var(--s5);
+  max-width: 24ch;
+}
+.lead .body p {
+  font-size: 21px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--s7);
+}
+.columns > .story {
+  padding: var(--s6) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.columns > .story:nth-child(odd) {
+  padding-right: var(--s5);
+  border-right: 1px solid var(--rule);
+  margin-right: calc(var(--s5) * -1);
+}
+
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s3);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.kickerDate {
+  color: var(--ink-2);
+  font-weight: 400;
+}
+.headline {
+  font-size: 30px;
+  font-weight: 700;
+  margin: var(--s2) 0 var(--s4);
+  letter-spacing: -0.01em;
+}
+.body {
+  max-width: var(--measure);
+}
+.body p + p {
+  margin-top: var(--s3);
+}
+.cite {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+.cite:hover {
+  border-bottom-width: 2px;
+}
+
+.facts {
+  margin: var(--s5) 0 0;
+  display: grid;
+  gap: var(--s3);
+  font-size: 16px;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--s3);
+}
+.facts div {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  gap: var(--s3);
+}
+.facts dt {
+  color: var(--ink-2);
+}
+.facts dd {
+  margin: 0;
+}
+.notStated {
+  color: var(--ink-2);
+  font-style: italic;
+}
+.record {
+  margin-top: var(--s4);
+  font-size: 16px;
+}
+.record a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+}
+
+.empty {
+  padding: var(--s6) 0;
+  font-size: 21px;
+  max-width: 60ch;
+}
+
+/* Also on the agenda */
+.also,
+.coverage {
+  padding-top: var(--s7);
+}
+.sectionTitle {
+  font-size: 34px;
+  font-weight: 800;
+  border-top: 3px double var(--ink);
+  padding-top: var(--s4);
+}
+.sectionDek {
+  color: var(--ink-2);
+  margin: var(--s2) 0 var(--s5);
+  font-size: 17px;
+}
+.meetingList {
+  border-top: 1px solid var(--ink);
+}
+.meetingList:last-of-type {
+  border-bottom: 1px solid var(--ink);
+}
+.meetingList summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  padding: var(--s4) 0;
+  font-size: 19px;
+}
+.summaryBody {
+  font-weight: 600;
+}
+.summaryMeta {
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.itemList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--s5);
+  columns: 2;
+  column-gap: var(--s7);
+  font-size: 16px;
+  line-height: 1.45;
+}
+.itemList li {
+  display: grid;
+  grid-template-columns: 7ch minmax(0, 1fr);
+  gap: var(--s2);
+  break-inside: avoid;
+  padding: var(--s2) 0;
+}
+.itemNumber {
+  color: var(--ink-2);
+}
+.itemList a {
+  text-decoration: none;
+}
+.itemList a:hover {
+  text-decoration: underline;
+}
+
+/* Coverage */
+.coverageList {
+  list-style: none;
+  padding: 0;
+  margin: var(--s4) 0 0;
+  display: grid;
+  gap: var(--s3);
+  font-size: 17px;
+}
+.coverageList li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+}
+.portal {
+  color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .lead {
+    grid-template-columns: 1fr;
+    grid-template-areas: "kicker" "headline" "body" "facts" "record";
+  }
+  .columns {
+    grid-template-columns: 1fr;
+  }
+  .columns > .story:nth-child(odd) {
+    padding-right: 0;
+    border-right: 0;
+    margin-right: 0;
+  }
+  .itemList {
+    columns: 1;
+  }
+}
+
+/* Loading skeleton, shaped like the masthead */
+.skelLine,
+.skelTitle {
+  background: var(--rule);
+  height: 16px;
+  margin-bottom: var(--s4);
+}
+.skelTitle {
+  height: 140px;
+  width: 70%;
+}
+
+@media (max-width: 640px) {
+  .masthead {
+    padding-top: var(--s6);
+  }
+  .dek {
+    font-size: 19px;
+  }
+  .dateline {
+    font-size: 14px;
+  }
+}

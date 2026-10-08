@@ -1,0 +1,281 @@
+{
+  "date": "2026-10-08T13:05:31.367Z",
+  "places": [
+    {
+      "id": "columbia-ga",
+      "label": "Columbia County, Georgia",
+      "pop": 165162,
+      "desert": true,
+      "bodies": [
+        {
+          "body": "Board of Commissioners",
+          "resultCount": 14,
+          "officialCount": 5,
+          "officialHosts": [
+            "columbiacoga.portal.civicclerk.com",
+            "www.columbiacountyga.gov",
+            "www.columbiacountyor.gov"
+          ],
+          "platforms": [
+            "civicclerk"
+          ],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://columbiacoga.portal.civicclerk.com",
+          "docLinks": 0,
+          "recentDates": [],
+          "failedExtract": [
+            "https://columbiacoga.portal.civicclerk.com",
+            "https://columbiacoga.portal.civicclerk.com/event/2585/files"
+          ]
+        },
+        {
+          "body": "Board of Education",
+          "resultCount": 15,
+          "officialCount": 3,
+          "officialHosts": [
+            "www.columbiacountyga.gov",
+            "www.clarke.k12.ga.us",
+            "www.clayton.k12.ga.us"
+          ],
+          "platforms": [],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://www.columbiacountyga.gov/129/Agendas-Minutes",
+          "docLinks": 0,
+          "recentDates": [],
+          "failedExtract": []
+        }
+      ]
+    },
+    {
+      "id": "edgecombe-nc",
+      "label": "Edgecombe County, North Carolina",
+      "pop": 48832,
+      "desert": true,
+      "bodies": [
+        {
+          "body": "Board of Commissioners",
+          "resultCount": 14,
+          "officialCount": 6,
+          "officialHosts": [
+            "www.edgecombecountync.gov",
+            "www.ecps.us",
+            "jonescountync.gov",
+            "www.wake.gov"
+          ],
+          "platforms": [],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://www.edgecombecountync.gov/residents/agendas.php",
+          "docLinks": 0,
+          "recentDates": [
+            "2026-08-02",
+            "2026-09-07",
+            "2026-10-04"
+          ],
+          "failedExtract": []
+        },
+        {
+          "body": "Board of Education",
+          "resultCount": 15,
+          "officialCount": 5,
+          "officialHosts": [
+            "www.ecps.us",
+            "www.edgecombecountync.gov",
+            "www.dpi.nc.gov",
+            "www.pitt.k12.nc.us"
+          ],
+          "platforms": [],
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "candidate": "https://www.ecps.us/apps/pages/index.jsp?uREC_ID=4456088&type=d&pREC_ID=2717251",
+          "docLinks": 547,
+          "recentDates": [
+            "2026-08-02",
+            "2026-08-09",
+            "2026-09-01",
+            "2026-09-07",
+            "2026-09-13",
+            "2026-10-04"
+          ],
+          "failedExtract": []
+        }
+      ]
+    },
+    {
+      "id": "wasco-or",
+      "label": "Wasco County, Oregon",
+      "pop": 26333,
+      "desert": true,
+      "bodies": [
+        {
+          "body": "Board of Commissioners",
+          "resultCount": 15,
+          "officialCount": 9,
+          "officialHosts": [
+            "www.wascocountyor.gov",
+            "www.clatsopcounty.gov",
+            "www.co.marion.or.us",
+            "jacksoncountyor.gov",
+            "www.nwasco.k12.or.us"
+          ],
+          "platforms": [],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://www.wascocountyor.gov/departments/board_of_county_commissioners/index.php",
+          "docLinks": 0,
+          "recentDates": [],
+          "failedExtract": []
+        },
+        {
+          "body": "School District board",
+          "resultCount": 13,
+          "officialCount": 5,
+          "officialHosts": [
+            "www.nwasco.k12.or.us",
+            "www.wascocountyor.gov",
+            "www.jcsd.k12.or.us"
+          ],
+          "platforms": [],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://www.nwasco.k12.or.us/apps/pages/index.jsp?uREC_ID=2790818&type=d&pREC_ID=2309556",
+          "docLinks": 0,
+          "recentDates": [],
+          "failedExtract": []
+        }
+      ]
+    },
+    {
+      "id": "allendale-sc",
+      "label": "Allendale County, South Carolina",
+      "pop": 7369,
+      "desert": true,
+      "bodies": [
+        {
+          "body": "County Council",
+          "resultCount": 17,
+          "officialCount": 6,
+          "officialHosts": [
+            "www.spartanburgcounty.gov",
+            "www.allendalenj.gov",
+            "marlborocounty.sc.gov",
+            "www.jaspercountysc.gov",
+            "www.clarendoncountysc.gov",
+            "www.horrycountysc.gov"
+          ],
+          "platforms": [
+            "civicplus"
+          ],
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "candidate": "https://www.allendalenj.gov/your-government/agendas-and-minutes",
+          "docLinks": 2,
+          "recentDates": [
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-15",
+            "2026-09-17",
+            "2026-09-20"
+          ],
+          "failedExtract": []
+        },
+        {
+          "body": "School District board",
+          "resultCount": 13,
+          "officialCount": 4,
+          "officialHosts": [
+            "go.boarddocs.com",
+            "www.acs.k12.sc.us",
+            "www.marion.k12.sc.us"
+          ],
+          "platforms": [
+            "boarddocs"
+          ],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://go.boarddocs.com/sc/acs/Board.nsf/Public",
+          "docLinks": 0,
+          "recentDates": [],
+          "failedExtract": []
+        }
+      ]
+    },
+    {
+      "id": "ann-arbor-mi",
+      "label": "City of Ann Arbor, Michigan",
+      "pop": 123851,
+      "desert": false,
+      "bodies": [
+        {
+          "body": "City Council",
+          "resultCount": 12,
+          "officialCount": 2,
+          "officialHosts": [
+            "a2gov.legistar.com"
+          ],
+          "platforms": [
+            "legistar"
+          ],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://a2gov.legistar.com/mainbody.aspx",
+          "docLinks": 0,
+          "recentDates": [
+            "2026-11-09",
+            "2026-11-11",
+            "2026-11-15",
+            "2026-11-16",
+            "2026-11-17",
+            "2026-11-18"
+          ],
+          "failedExtract": []
+        },
+        {
+          "body": "Planning Commission",
+          "resultCount": 14,
+          "officialCount": 2,
+          "officialHosts": [
+            "a2gov.legistar.com"
+          ],
+          "platforms": [
+            "legistar"
+          ],
+          "L1": true,
+          "L2": false,
+          "L3": false,
+          "candidate": "https://a2gov.legistar.com",
+          "docLinks": 0,
+          "recentDates": [
+            "2026-11-09",
+            "2026-11-11",
+            "2026-11-15",
+            "2026-11-16",
+            "2026-11-17",
+            "2026-11-18"
+          ],
+          "failedExtract": [
+            "https://a2gov.legistar.com/DepartmentDetail.aspx?ID=4180&GUID=49245781-BE1D-41F8-AB3D-69A51649C2D6"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "credits": 23,
+    "L1": "10/10",
+    "L2": "2/10",
+    "L3": "2/10"
+  }
+}

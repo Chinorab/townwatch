@@ -1,0 +1,148 @@
+.hero {
+  padding: var(--s8) 0 var(--s7);
+  border-bottom: 3px double var(--ink);
+}
+.title {
+  font-size: clamp(44px, 7.4vw, 92px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  max-width: 14ch;
+}
+.sub {
+  margin-top: var(--s5);
+  font-size: 23px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 44ch;
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s6);
+  padding: var(--s3) var(--s5);
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  border: 1px solid var(--ink);
+}
+.cta:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+.cta:active {
+  transform: translateY(1px);
+}
+
+.why {
+  padding: var(--s7) 0;
+  border-bottom: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  column-gap: var(--s7);
+  align-items: start;
+}
+.whyTitle {
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 700;
+}
+.whyBody {
+  font-size: 20px;
+  max-width: 54ch;
+}
+
+.places {
+  padding: var(--s7) 0;
+}
+.placesTitle,
+.methodTitle {
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: var(--s4);
+}
+.placeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+.placeList li {
+  border-bottom: 1px solid var(--ink);
+}
+.placeLink {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: var(--s5);
+  padding: var(--s5) 0;
+  text-decoration: none;
+}
+.placeName {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.placeState {
+  color: var(--ink-2);
+}
+.placeNote {
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.placeArrow {
+  align-self: center;
+}
+.placeLink:hover .placeName {
+  color: var(--accent);
+}
+
+.method {
+  padding: var(--s7) 0 0;
+  border-top: 3px double var(--ink);
+}
+.methodGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: var(--s6);
+  font-size: 18px;
+}
+.methodGrid p + p {
+  border-left: 1px solid var(--rule);
+  padding-left: var(--s6);
+}
+.methodGrid strong {
+  display: block;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 24px;
+  line-height: 1.15;
+  margin-bottom: var(--s2);
+}
+
+@media (max-width: 860px) {
+  .why,
+  .methodGrid {
+    grid-template-columns: 1fr;
+    row-gap: var(--s5);
+  }
+  .methodGrid p + p {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s5);
+  }
+  .placeLink {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: var(--s1);
+  }
+  .placeState,
+  .placeNote {
+    grid-column: 1;
+  }
+  .placeArrow {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

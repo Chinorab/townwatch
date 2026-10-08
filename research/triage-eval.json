@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-08T14:06:32.509Z",
+  "items": 70,
+  "report": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+      "itemsJudged": "70/70",
+      "routineAgreement": 0.814,
+      "decisionAgreement": 0.686,
+      "escalated": 10,
+      "escalationPrecision": 0.8,
+      "escalationRecall": 0.727,
+      "seconds": 41.8,
+      "calls": 7,
+      "costUsd": 0.00154,
+      "disagreements": [
+        "+ boc:6.6 NC DOT Replacement Notice (Bridge #320114 on Cherr",
+        "- boe:8.5.A Approval for the Technology Department to Submit a (routine)",
+        "- boe:8.1.2 Existing Policies (For Approval) Substantive chang (routine)",
+        "+ boe:8.1.4 Rescind:",
+        "- boe:8.9.B Approval to accept funding from NC Department of I (low_impact)"
+      ]
+    },
+    "nvidia/Nemotron-3_5-Lightning": {
+      "itemsJudged": "70/70",
+      "routineAgreement": 0.786,
+      "decisionAgreement": 0.671,
+      "escalated": 18,
+      "escalationPrecision": 0.444,
+      "escalationRecall": 0.727,
+      "seconds": 13.1,
+      "calls": 7,
+      "costUsd": 0.00152,
+      "disagreements": [
+        "+ boc:5.1 Water and Sewer update",
+        "+ boc:6.6 NC DOT Replacement Notice (Bridge #320114 on Cherr",
+        "+ boc:7 COMMISSIONERS’ REPORT:",
+        "+ boe:6.5 School Resource Officer (SRO) Grant",
+        "- boe:8.5.A Approval for the Technology Department to Submit a (routine)",
+        "- boe:8.1.2 Existing Policies (For Approval) Substantive chang (routine)",
+        "+ boe:8.2.B Approval of the Services Provided by Integrated Fa",
+        "+ boe:8.3.B Approval of the Services Provided by Yotaron Enric",
+        "+ boe:8.4.B Approval of the Services Provided by EducatorsHand",
+        "+ boe:8.5.B Approval of the purchase of MORE (Models of Readin",
+        "+ boe:8.7.B Approval to accept funding from the NC Department ",
+        "+ boe:8.8.B Approval to purchase Gizmos, as a sole source, fro",
+        "- boe:8.9.B Approval to accept funding from NC Department of I (cap)"
+      ]
+    }
+  }
+}

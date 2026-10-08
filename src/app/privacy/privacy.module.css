@@ -1,0 +1,20 @@
+.page {
+  padding-top: var(--s7);
+  max-width: calc(66ch + 48px);
+}
+.title {
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 800;
+}
+.lead {
+  font-size: 23px;
+  color: var(--ink-2);
+  margin: var(--s4) 0 var(--s6);
+}
+.page h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: var(--s6) 0 var(--s3);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
+}

@@ -1,0 +1,220 @@
+# Counties with zero local news sources, State of Local News 2025 (Medill, Northwestern University).
+# Source: https://northwesternlni.com:9095/lni/fetchLocalNewsEcosystemMap?year=2025
+# (the data feed behind https://localnewsinitiative.northwestern.edu/projects/state-of-local-news/explore/)
+# Retrieved 2026-10-08. A county is kept when newspapers + digital sites + ethnic outlets + public
+# broadcasting + network stations sum to 0. Count = 213, matching the published figure.
+# State is derived from the FIPS code (the feed's own state column is unreliable).
+county	state	fips	population
+Alexander	IL	17003	4695
+Allendale	SC	45005	7369
+Alpine	CA	06003	1141
+Androscoggin	ME	23001	113765
+Appomattox	VA	51011	16864
+Asotin	WA	53003	22549
+Autauga	AL	01001	60342
+Baker	GA	13007	2743
+Banner	NE	31007	674
+Bath	VA	51017	4051
+Bayfield	WI	55007	16769
+Benton	MS	28009	7438
+Blaine	NE	31009	436
+Bland	VA	51021	6179
+Boone	KY	21015	140496
+Bristol Bay Borough	AK	02060	844
+Buckingham	VA	51029	16978
+Buffalo	SD	46017	1884
+Butte	SD	46019	10863
+Calhoun	FL	12013	13470
+Calhoun	GA	13037	5457
+Calhoun	IL	17013	4317
+Camas	ID	16025	1232
+Camden	NC	37029	11137
+Campbell	KY	21037	93702
+Caroline	VA	51033	32640
+Cass	NE	31025	27446
+Catron	NM	35003	3825
+Charles City	VA	51036	6610
+Chattahoochee	GA	13053	8661
+Cheyenne	CO	08017	1727
+Clark	ID	16033	801
+Clark	IL	17023	15088
+Clark	KS	20025	1847
+Clarke	VA	51043	15466
+Clay	GA	13061	2853
+Clay	IL	17025	12999
+Cleburne	AL	01029	15639
+Cochran	TX	48079	2509
+Colfax	NM	35007	12255
+Collingsworth	TX	48087	2563
+Columbia	GA	13073	165162
+Conejos	CO	08021	7521
+Crawford	AR	05033	61891
+Cumberland	VA	51049	9878
+Currituck	NC	37053	31593
+Daggett	UT	49009	992
+Denali Borough	AK	02068	1584
+Dolores	CO	08033	2513
+Dundy	NE	31057	1561
+Dunn	ND	38025	4019
+Duval	TX	48131	9604
+Eaton	MI	26045	108820
+Echols	GA	13101	3709
+Edgecombe	NC	37065	48832
+Edwards	IL	17047	5968
+Edwards	TX	48137	1393
+Elk	KS	20049	2467
+Emery	UT	49015	10144
+Emporia city	VA	51595	5463
+Esmeralda	NV	32009	736
+Essex	VT	50009	6010
+Fannin	TX	48147	37571
+Floyd	IN	18043	80809
+Forest	PA	42053	6449
+Franklin	AR	05047	17468
+Franklin	TX	48159	10735
+Fremont	ID	16043	14196
+Frontier	NE	31063	2585
+Garfield	MT	30033	1211
+Gates	NC	37073	10343
+Glades	FL	12043	12786
+Glascock	GA	13125	2954
+Glasscock	TX	48173	1141
+Golden Valley	MT	30037	835
+Gooding	ID	16047	16061
+Gosper	NE	31073	1847
+Granite	MT	30039	3595
+Greeley	NE	31077	2219
+Greene	IL	17061	11543
+Greenlee	AZ	04011	9369
+Greensville	VA	51081	11133
+Hall	TX	48191	2818
+Hamilton	FL	12047	13471
+Hancock	GA	13141	8676
+Hancock	TN	47067	6956
+Hanson	SD	46061	3471
+Harding	NM	35021	624
+Harmon	OK	40057	2392
+Hartley	TX	48205	5145
+Haskell	TX	48207	5385
+Hemphill	TX	48211	3189
+Hoonah-Angoon Census Area	AK	02105	2262
+Hyde	NC	37095	4607
+Irion	TX	48235	1549
+Issaquena	MS	28055	1256
+Jackson	SD	46071	2776
+Jackson Parish	LA	22049	14746
+Jasper	IL	17079	9144
+Jasper	MS	28061	16013
+Jones	NC	37103	9401
+Kalawao	HI	15005	81
+Kenedy	TX	48261	343
+Kent	TX	48263	734
+Keweenaw	MI	26083	2172
+King	TX	48269	217
+King George	VA	51099	28568
+King and Queen	VA	51097	6720
+La Salle	TX	48283	6537
+Lafayette	FL	12067	8078
+Lake and Peninsula Borough	AK	02164	1331
+Lamar	MS	28073	66217
+Lander	NV	32015	5769
+Liberty	MT	30051	1974
+Lincoln	CO	08073	5480
+Lincoln	ID	16063	5450
+Lipscomb	TX	48295	2906
+Logan	AR	05083	21400
+Loup	NE	31115	592
+Loving	TX	48301	43
+Lyman	SD	46085	3705
+Mason	WV	54053	24765
+Mathews	VA	51115	8514
+Maverick	TX	48323	57762
+McCormick	SC	45065	9941
+McDowell	WV	54047	17439
+McMullen	TX	48311	568
+McPherson	NE	31117	383
+Meigs	OH	39105	21767
+Meigs	TN	47121	13691
+Menifee	KY	21165	6286
+Menominee	WI	55078	4226
+Mineral	CO	08079	944
+Mineral	NV	32021	4528
+Minidoka	ID	16067	22480
+Montgomery	GA	13209	8761
+Mora	NM	35033	4123
+Morehouse Parish	LA	22067	23955
+Morgan	UT	49029	13000
+Motley	TX	48345	1020
+Nevada	AR	05099	8120
+New Madrid	MO	29143	15424
+Northampton	NC	37131	16715
+Northampton	VA	51131	12021
+Ohio	IN	18115	6004
+Oxford	ME	23017	59905
+Payette	ID	16075	27279
+Pershing	NV	32027	6364
+Petroleum	MT	30069	554
+Piute	UT	49031	1550
+Porter	IN	18127	175335
+Powell	KY	21197	12972
+Prince George	VA	51149	42871
+Prince of Wales-Hyder Census Area	AK	02198	5696
+Prowers	CO	08099	11751
+Quay	NM	35037	8510
+Quitman	GA	13239	2280
+Real	TX	48385	2854
+Red River	TX	48387	11678
+Rich	UT	49033	2670
+Robertson	KY	21201	2313
+Runnels	TX	48399	9868
+Sagadahoc	ME	23023	37513
+Saluda	SC	45081	19123
+Schley	GA	13249	4526
+Scott	IL	17171	4710
+Sherman	OR	41055	1951
+Sherman	TX	48421	2678
+Sioux	ND	38085	3643
+Sioux	NE	31165	1154
+Skagway Municipality	AK	02230	1095
+Slope	ND	38087	674
+Somerset	ME	23025	51302
+St. Helena Parish	LA	22091	10774
+Stafford	KS	20185	3909
+Stanley	SD	46117	3043
+Starr	TX	48427	65934
+Sterling	TX	48431	1397
+Stonewall	TX	48433	1218
+Sullivan	NH	33019	43969
+Sussex	VA	51183	10757
+Sutter	CA	06101	97948
+Switzerland	IN	18155	10019
+Terrell	TX	48443	687
+Todd	KY	21219	12494
+Toole	MT	30101	5133
+Torrance	NM	35057	15633
+Treasure	MT	30103	772
+Treutlen	GA	13283	6341
+Tunica	MS	28143	9234
+Twiggs	GA	13289	7691
+Tyrrell	NC	37177	3461
+Union	FL	12125	15532
+Upton	TX	48461	3109
+Van Buren	TN	47175	6493
+Vermillion	IN	18165	15417
+Vernon Parish	LA	22115	46250
+Waldo	ME	23027	40620
+Waller	TX	48473	63553
+Wasatch	UT	49051	37144
+Wasco	OR	41065	26333
+Webster	GA	13307	2337
+West Baton Rouge Parish	LA	22121	28266
+Wheeler	NE	31183	775
+Wheeler	OR	41069	1436
+White	IL	17193	13401
+Wilcox	GA	13315	8779
+Wilkin	MN	27167	6306
+Wilkinson	GA	13319	8725
+Winkler	TX	48495	7414
+Wyoming	WV	54109	20277
+Yakutat City and Borough	AK	02282	687
+Ziebach	SD	46137	2322
