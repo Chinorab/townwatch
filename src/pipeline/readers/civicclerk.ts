@@ -80,27 +80,32 @@ export const civicclerkReader: Reader = {
     }
 
     const meetings: ListedMeeting[] = [];
+    const scheduled: ListedMeeting[] = [];
+    const today = ctx.now.toISOString().slice(0, 10);
     // Most recent first, keeping only meetings whose agenda is already published: the next
-    // meeting is often listed weeks before its agenda (Washtenaw, MI, 2026-10-08).
+    // meeting is often listed weeks before its agenda (Washtenaw, MI, 2026-10-08). Those
+    // scheduled meetings still go to the calendar, flagged, so residents know when to attend.
     for (const { e, date } of [...picked].reverse()) {
       if (meetings.length >= MAX_MEETINGS) break;
-      const agendaFile = e.publishedFiles?.find((f) => f.type === "Agenda") ?? e.publishedFiles?.find((f) => /agenda/i.test(f.type));
-      if (!agendaFile) continue; // agenda not published yet
-      const meeting = await getJson<{ items: CcItem[] }>(ctx, `${api}/Meetings/${e.agendaId}`);
-      const items = civicclerkItems(meeting.items ?? []);
-      if (items.length === 0) continue;
       const loc = e.eventLocation;
-      meetings.push({
+      const base = {
         date,
         time: clock(e.startDateTime.slice(11, 16)),
         location: loc?.address1 ? [loc.address1, loc.city, loc.state].filter(Boolean).join(", ") : null,
         bodyName: e.eventName,
         note: e.eventDescription ? stripHtml(e.eventDescription) : undefined,
-        agendaUrl: `${api}/Meetings/GetMeetingFileStream(fileId=${agendaFile.fileId},plainText=false)`,
         docs: [],
-        items,
-      });
+      };
+      const agendaFile = e.publishedFiles?.find((f) => f.type === "Agenda") ?? e.publishedFiles?.find((f) => /agenda/i.test(f.type));
+      if (!agendaFile) {
+        if (date >= today && scheduled.length < 2) scheduled.push({ ...base, agendaUrl: source.url, agendaPublished: false, items: [] });
+        continue;
+      }
+      const meeting = await getJson<{ items: CcItem[] }>(ctx, `${api}/Meetings/${e.agendaId}`);
+      const items = civicclerkItems(meeting.items ?? []);
+      if (items.length === 0) continue;
+      meetings.push({ ...base, agendaUrl: `${api}/Meetings/GetMeetingFileStream(fileId=${agendaFile.fileId},plainText=false)`, items });
     }
-    return meetings.sort((a, b) => a.date.localeCompare(b.date));
+    return [...meetings, ...scheduled].sort((a, b) => a.date.localeCompare(b.date));
   },
 };

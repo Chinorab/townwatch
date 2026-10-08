@@ -152,8 +152,8 @@ distance; network inspection shows the address only in the Census JSONP request.
 **Independent Test**: on a demo place, every upcoming meeting in the sources is listed with its
 agenda link; missing time or room reads "not stated in the record".
 
-- [ ] T059 [P] [US4] Calendar tests (date order, missing fields) in tests/unit/calendar.test.ts
-- [ ] T060 [US4] Build the calendar section and per-item "How to take part" block from Explanation fields in src/components/calendar/ and src/components/briefing/TakePart.tsx
+- [X] T059 [P] [US4] Calendar tests (date order, missing fields) in tests/unit/calendar.test.ts
+- [X] T060 [US4] Build the calendar section and per-item "How to take part" block from Explanation fields in src/components/calendar/ and src/components/briefing/TakePart.tsx
 
 ---
 
@@ -164,8 +164,8 @@ agenda link; missing time or room reads "not stated in the record".
 **Independent Test**: panel counts equal the briefing; cost equals the sum of recorded calls;
 cached views say they cost nothing new.
 
-- [ ] T061 [P] [US5] Panel totals test (sum of ModelCall costs, counts per stage and model) in tests/unit/panel.test.ts
-- [ ] T062 [US5] Build the panel (sources kept and rejected with reasons, items triaged, escalated with reasons, tokens and cost per model, Tavily credits, analysis date, cache notice) in src/components/panel/HowThisWasMade.tsx
+- [X] T061 [P] [US5] Panel totals test (sum of ModelCall costs, counts per stage and model) in tests/unit/panel.test.ts
+- [X] T062 [US5] Build the panel (sources kept and rejected with reasons, items triaged, escalated with reasons, tokens and cost per model, Tavily credits, analysis date, cache notice) in src/components/panel/HowThisWasMade.tsx
 
 ---
 

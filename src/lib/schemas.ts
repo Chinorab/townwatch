@@ -102,6 +102,8 @@ export const Meeting = z.object({
   location: z.string().nullable(),
   agendaUrl: z.string(),
   documentHashes: z.array(z.string()),
+  /** false for a scheduled meeting whose agenda is not published yet (platform readers). */
+  agendaPublished: z.boolean().optional(),
 });
 export type Meeting = z.infer<typeof Meeting>;
 

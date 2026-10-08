@@ -1,0 +1,132 @@
+.panel {
+  padding-top: var(--s7);
+}
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  border-top: 3px double var(--ink);
+  padding-top: var(--s4);
+}
+.dek {
+  color: var(--ink-2);
+  margin: var(--s2) 0 var(--s5);
+  font-size: 17px;
+  max-width: 70ch;
+}
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: var(--s5) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--s4);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.flow > li:not(.arrow) {
+  display: grid;
+  align-content: start;
+  gap: var(--s1);
+}
+.arrow {
+  align-self: center;
+  color: var(--ink-2);
+}
+.big {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+}
+.what {
+  font-weight: 600;
+  font-size: 17px;
+}
+.how {
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.reasons {
+  margin-top: var(--s4);
+  font-size: 16px;
+  color: var(--ink-2);
+  max-width: 90ch;
+}
+.tableWrap {
+  overflow-x: auto;
+  margin-top: var(--s5);
+}
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 620px;
+  font-size: 16px;
+}
+.table th,
+.table td {
+  text-align: right;
+  padding: var(--s2) var(--s3);
+  border-bottom: 1px solid var(--rule);
+}
+.table th:first-child {
+  text-align: left;
+}
+.table thead th {
+  font-weight: 600;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--ink);
+}
+.table tfoot th,
+.table tfoot td {
+  font-weight: 600;
+  border-bottom: 0;
+  border-top: 1px solid var(--ink);
+}
+.note {
+  margin-top: var(--s3);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.sources {
+  margin-top: var(--s5);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.sources summary {
+  cursor: pointer;
+  padding: var(--s4) 0;
+  font-weight: 600;
+}
+.sources ul {
+  list-style: none;
+  padding: 0 0 var(--s4);
+  margin: 0;
+  display: grid;
+  gap: var(--s2);
+  font-size: 15px;
+}
+.url {
+  word-break: break-all;
+}
+.reason {
+  color: var(--ink-2);
+}
+.reason::before {
+  content: "(";
+}
+.reason::after {
+  content: ")";
+}
+.sources a {
+  word-break: break-all;
+}
+@media (max-width: 960px) {
+  .flow {
+    grid-template-columns: 1fr;
+  }
+  .arrow {
+    transform: rotate(90deg);
+    justify-self: start;
+  }
+}

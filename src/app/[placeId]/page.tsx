@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Info } from "@phosphor-icons/react/dist/ssr";
 import { getBriefing } from "@/lib/briefings";
 import { STATE_NAMES } from "@/lib/places";
@@ -11,6 +12,8 @@ import { AlsoOnAgenda } from "@/components/briefing/AlsoOnAgenda";
 import { longDate, ROLE_LABEL } from "@/components/briefing/format";
 import styles from "@/components/briefing/briefing.module.css";
 import { TopicFilter } from "@/components/briefing/TopicFilter";
+import { Calendar } from "@/components/calendar/Calendar";
+import { HowThisWasMade } from "@/components/panel/HowThisWasMade";
 import { NearYou, type LocatedItem } from "@/components/near/NearYou";
 import { citeHref } from "@/components/briefing/format";
 import { TOPICS, type Briefing, type Topic } from "@/lib/schemas";
@@ -67,6 +70,8 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
     : b;
   const [lead, ...rest] = shown.headlineItems;
   const centre = lookupPlace(b.placeId);
+  await connection(); // the calendar depends on today's date: render per request
+  const today = new Date().toISOString().slice(0, 10);
   const covered = b.bodies.filter((x) => x.coverage === "covered");
   const missing = b.bodies.filter((x) => x.coverage !== "covered");
 
@@ -79,7 +84,7 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
         </p>
         <h1 className={styles.title}>This week in {b.placeName}</h1>
         <p className={styles.dek}>
-          What {covered.map((c) => `the ${c.name.replace(new RegExp(`^${b.placeName}\\s+`, "i"), "")}`).join(" and ") || "local bodies"}{" "}
+          What {new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(covered.map((c) => `the ${c.name.replace(new RegExp(`^${b.placeName}\\s+`, "i"), "")}`)) || "local bodies"}{" "}
           {covered.length > 1 ? "are deciding, explained from their official agendas." : "is deciding, explained from its official agendas."}
         </p>
         <p className={styles.notice}>
@@ -111,7 +116,11 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
 
       <AlsoOnAgenda b={shown} />
 
+      <Calendar meetings={b.meetings} today={today} />
+
       {centre && <NearYou placeName={b.placeName} stateCode={b.state} centre={{ lat: centre.lat, lon: centre.lon }} located={locatedItems(b)} />}
+
+      <HowThisWasMade b={b} />
 
       <section className={styles.coverage} aria-labelledby="coverage-title">
         <h2 id="coverage-title" className={styles.sectionTitle}>

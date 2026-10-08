@@ -24,6 +24,8 @@ export interface ListedMeeting {
    *  added to the source text that statements may quote. */
   note?: string;
   agendaUrl: string;
+  /** false: a scheduled meeting without published agenda yet (shown in the calendar only). */
+  agendaPublished?: boolean;
   docs: Omit<DocRef, "meetingId">[];
   /** Present when the platform returns numbered items: no document splitting needed. */
   items?: PlatformItem[];

@@ -65,22 +65,21 @@ export const legistarReader: Reader = {
     if (picked.length === 0) picked = mine.filter((x) => x.date < window.from).slice(-1);
 
     const meetings: ListedMeeting[] = [];
-    // Most recent first, only meetings whose agenda items are already published.
+    const scheduled: ListedMeeting[] = [];
+    const today = ctx.now.toISOString().slice(0, 10);
+    // Most recent first, only meetings whose agenda items are already published; scheduled
+    // meetings without items yet go to the calendar only.
     for (const { e, date } of [...picked].reverse()) {
       if (meetings.length >= MAX_MEETINGS) break;
+      const base = { date, time: e.EventTime?.trim() || null, location: e.EventLocation?.trim() || null, bodyName: e.EventBodyName, docs: [] };
       const rows = await getJson<LegistarItem[]>(ctx, `${api}/events/${e.EventId}/eventitems?AgendaNote=1`);
       const items = legistarItems(rows);
-      if (items.length === 0) continue;
-      meetings.push({
-        date,
-        time: e.EventTime?.trim() || null,
-        location: e.EventLocation?.trim() || null,
-        bodyName: e.EventBodyName,
-        agendaUrl: e.EventAgendaFile || e.EventInSiteURL || source.url,
-        docs: [],
-        items,
-      });
+      if (items.length === 0) {
+        if (date >= today && scheduled.length < 2) scheduled.push({ ...base, agendaUrl: e.EventInSiteURL || source.url, agendaPublished: false, items: [] });
+        continue;
+      }
+      meetings.push({ ...base, agendaUrl: e.EventAgendaFile || e.EventInSiteURL || source.url, items });
     }
-    return meetings.sort((a, b) => a.date.localeCompare(b.date));
+    return [...meetings, ...scheduled].sort((a, b) => a.date.localeCompare(b.date));
   },
 };

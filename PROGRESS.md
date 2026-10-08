@@ -86,7 +86,14 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   10 mi radius, outside-area / none-nearby states), topic filter via ?topic= (server, square tabs), favicon
   (src/app/icon.svg), privacy page names Census, OpenFreeMap, Nominatim, visitor hash. SC-007 verified in the
   browser: address only in the census.gov request. 96 tests. T054 e2e spec written, not run (sandbox).
-- NEXT: US4 calendar + take part, US5 panel; then SC-004 remaining causes; then deploy (T070) by 25 Oct.
+- [x] US4 + US5 (2026-10-08): calendar (coming up / recently, "Agenda not published yet" for scheduled
+  meetings returned by Legistar/CivicClerk readers, agendaPublished=false), story facts (Decided by, Amount,
+  Meeting, Where, Comment), "How this was made" panel (flow sources → items → Nano → Ultra, removed sentences,
+  Super fallbacks, per-model table with reasoning tokens, Tavily credits, sources kept/rejected). Next 16:
+  `await connection()` before `new Date()` in the place page. 102 tests.
+- Known gap: Ann Arbor school board resolves to Washtenaw Intermediate SD (AAPS is on BoardDocs, unreadable).
+- NEXT: SC-004 remaining causes (Police Jury, news-article agendas, Montgomery GA 0 items); then deploy (T070)
+  on Vercel + Upstash by 25 Oct; README, video.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.
 

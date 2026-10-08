@@ -178,11 +178,12 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
     };
     let source = first;
     let listed: ListedMeeting[] = await safeList(source);
+    const hasAgenda = (l: ListedMeeting[]) => l.some((m) => m.agendaPublished !== false);
     for (const alt of alternates[first.role] ?? []) {
-      if (listed.length > 0) break;
+      if (hasAgenda(listed)) break;
       if (taken.has(alt.url)) continue;
       const altListed = await safeList(alt);
-      if (altListed.length > 0) {
+      if (hasAgenda(altListed)) {
         progress("read", `${first.role}: ${first.url} had no agenda, using ${alt.url}`);
         source = alt;
         listed = altListed;
@@ -190,9 +191,14 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
       }
     }
     sourcesUsed.push(source);
-    meetingsBySource.set(source.sourceId, listed.length);
+    meetingsBySource.set(source.sourceId, listed.filter((m) => m.agendaPublished !== false).length);
     progress("read", `${source.role}: ${listed.length} meetings in window`);
     for (const lm of listed) {
+      if (lm.agendaPublished === false) {
+        // Scheduled, agenda not out yet: calendar only, nothing to read.
+        meetings.push({ meetingId: sha256(`${source.sourceId}|${lm.date}|${lm.bodyName}`), sourceId: source.sourceId, body: lm.bodyName, role: source.role, date: lm.date, time: lm.time, location: lm.location, agendaUrl: lm.agendaUrl, documentHashes: [], agendaPublished: false });
+        continue;
+      }
       // A portal root can list another body's agenda (Caroline County, VA: the supervisors' page
       // and the planning page both led to one planning agenda): an agenda is read for one body only.
       if (seenAgendas.has(lm.agendaUrl)) continue;

@@ -47,8 +47,19 @@ export function Story({ h, lead = false, windowFrom }: { h: HeadlineItem; lead?:
           <dd className={isStated(e.fields.amount) ? undefined : styles.notStated}>{e.fields.amount}</dd>
         </div>
         <div>
-          <dt>Location</dt>
-          <dd className={isStated(e.fields.place) ? undefined : styles.notStated}>{isStated(e.fields.place) ? e.fields.place : NOT_STATED}</dd>
+          <dt>Meeting</dt>
+          <dd>
+            {longDate(meeting.date)}
+            {meeting.time ? `, ${meeting.time}` : <span className={styles.notStated}>, time {NOT_STATED}</span>}
+          </dd>
+        </div>
+        <div>
+          <dt>Where</dt>
+          <dd className={meeting.location ? undefined : styles.notStated}>{meeting.location ?? NOT_STATED}</dd>
+        </div>
+        <div>
+          <dt>Comment</dt>
+          <dd className={isStated(e.fields.commentRules) ? undefined : styles.notStated}>{e.fields.commentRules}</dd>
         </div>
       </dl>
 
