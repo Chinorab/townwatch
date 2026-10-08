@@ -29,6 +29,8 @@ export interface VerifyResult {
   /** Accepted sources, best first. */
   accepted: Source[];
   rejected: { url: string; reason: string }[];
+  /** Hosts the model judged official and in the right place, whatever the body: the place's own sites. */
+  ownHosts?: string[];
 }
 
 function describePlace(place: Place, role: BodyRole): string {
@@ -101,6 +103,7 @@ export async function verify(ctx: Ctx, place: Place, role: BodyRole, all: Candid
   // neighbouring county's site, the domain rule overrides it.
   const otherCounty = result.accepted.filter((s) => otherCountyHost(s.url, token));
   return {
+    ownHosts: (result.ownHosts ?? []).filter((h) => !otherCountyHost(`https://${h}/`, token) && !otherStateHost(`https://${h}/`, place.state)),
     accepted: result.accepted.filter((s) => !otherCounty.includes(s)),
     rejected: [
       ...foreign.map((c) => ({ url: c.url, reason: `domain of another state (${otherStateHost(c.url, place.state)})` })),
@@ -111,9 +114,9 @@ export async function verify(ctx: Ctx, place: Place, role: BodyRole, all: Candid
 }
 
 async function verifyCandidates(ctx: Ctx, place: Place, role: BodyRole, candidates: Candidate[]): Promise<VerifyResult> {
-  if (candidates.length === 0) return { accepted: [], rejected: [] };
+  if (candidates.length === 0) return { accepted: [], rejected: [], ownHosts: [] };
   const top = candidates.slice(0, 6);
-  return cached(ctx.kv, `verify3:${ctx.models.config.fast}:${sha256(place.placeId + role + top.map((c) => c.url).join("|"))}`, async () => {
+  return cached(ctx.kv, `verify4:${ctx.models.config.fast}:${sha256(place.placeId + role + top.map((c) => c.url).join("|"))}`, async () => {
     const user =
       `Place: ${describePlace(place, role)}\nBody: ${bodyText(place, role)}\nCandidates:\n` +
       top.map((c, i) => `${i + 1}. url: ${c.url}\n   title: ${c.title}\n   snippet: ${c.snippet.replace(/\s+/g, " ")}`).join("\n");
@@ -151,6 +154,7 @@ async function verifyCandidates(ctx: Ctx, place: Place, role: BodyRole, candidat
       const { platform, key } = detectPlatform(c.url);
       return { sourceId: sha256(c.url), role, url: c.url, host: new URL(c.url).host, platform, platformKey: key, verification: v, accepted: true, checkedAt: ctx.now.toISOString() };
     });
-    return { accepted: ranked, rejected };
+    const ownHosts = [...new Set(top.filter((c, i) => { const v = byUrl.get(c.url) ?? verdicts[i]; return v?.official && v.rightPlace; }).map((c) => new URL(c.url).host))];
+    return { accepted: ranked, rejected, ownHosts };
   }, 30 * 86_400);
 }

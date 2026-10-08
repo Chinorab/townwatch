@@ -21,6 +21,7 @@ export function sha256(text: string): string {
 }
 
 interface Entry {
+  k?: string; // original key (FileKV file names are sanitised)
   v: unknown;
   exp: number | null;
 }
@@ -81,7 +82,7 @@ export class FileKV implements KV {
     return e;
   }
   private write(key: string, e: Entry) {
-    writeFileSync(this.path(key), JSON.stringify(e));
+    writeFileSync(this.path(key), JSON.stringify({ k: key, ...e }));
   }
   async get<T>(key: string) {
     return (this.read(key)?.v as T) ?? null;

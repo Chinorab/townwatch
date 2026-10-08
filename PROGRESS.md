@@ -92,8 +92,14 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   Super fallbacks, per-model table with reasoning tokens, Tavily credits, sources kept/rejected). Next 16:
   `await connection()` before `new Date()` in the place page. 102 tests.
 - Known gap: Ann Arbor school board resolves to Washtenaw Intermediate SD (AAPS is on BoardDocs, unreadable).
-- NEXT: SC-004 remaining causes (Police Jury, news-article agendas, Montgomery GA 0 items); then deploy (T070)
-  on Vercel + Upstash by 25 Oct; README, video.
+- [x] SC-004 runs 3 and 4 (commit 5969f98): honest result 4/11, every success checked against the county's own
+  site (table now shows the main source). Runs 2-3 had a false success (Franklin AR read from Franklin TN).
+  Added: state names in domains, `co`+state and .org/.com domains, other-county domain rule (after the model,
+  so prompts and the test tape stay stable), letterhead other-state check, month-only dates (no guessed day),
+  county body names by state (Quorum Court AR, Fiscal Court KY, Commissioners Court TX, Police Jury LA,
+  Board of Supervisors VA/MS/IA/CA/WI/AZ), discover cache key includes the phrase. History in research/sc004.md.
+- NEXT (proposed to user 2026-10-08): one bounded generic attempt (site-scoped search on the county's own
+  domain) OR revise SC-004 target; then deploy (T070) on Vercel + Upstash; README, video.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.
 

@@ -2,9 +2,9 @@
 // spend recorder that charges every model call and Tavily credit to its place.
 import { sha256 } from "@/lib/store";
 import { bodiesFor } from "@/lib/places";
-import type { AgendaItem, BodyRef, Meeting, ModelCall, Place, Source } from "@/lib/schemas";
+import type { AgendaItem, BodyRef, BodyRole, Meeting, ModelCall, Place, Source } from "@/lib/schemas";
 import type { Ctx } from "./context";
-import { discover } from "./stages/discover";
+import { discover, discoverOnSite } from "./stages/discover";
 import { verify } from "./stages/verify";
 import { readerFor } from "./readers/index";
 import { windowFor, type ListedMeeting } from "./readers/types";
@@ -40,6 +40,8 @@ export interface SourcesResult {
   rejected: { url: string; reason: string }[];
   /** Other accepted, readable candidates per body, tried in order when the first yields no agenda. */
   alternates?: Record<string, Source[]>;
+  /** Hosts judged official and in the right place, for a second, site-scoped search. */
+  ownHosts?: string[];
 }
 
 export function findSources(ctx: Ctx, place: Place, progress: Progress = () => {}): Promise<SourcesResult> {
@@ -52,9 +54,11 @@ async function findSourcesInner(ctx: Ctx, place: Place, progress: Progress): Pro
   const rejected: { url: string; reason: string }[] = [];
   const used = new Set<string>();
   const alternates: Record<string, Source[]> = {};
+  const ownHosts = new Set<string>();
   for (const body of bodiesFor(place)) {
     const candidates = await discover(ctx, place, body);
     const v = await verify(ctx, place, body.role, candidates);
+    for (const h of v.ownHosts ?? []) ownHosts.add(h);
     // One page serves one body: the model sometimes accepts the commission's agenda page for
     // the planning board too, which would list the same meetings twice.
     const source = v.accepted.find((s) => !used.has(s.url)) ?? null;
@@ -77,7 +81,40 @@ async function findSourcesInner(ctx: Ctx, place: Place, progress: Progress): Pro
     if (readable) sources.push(source);
     progress("discover", `${body.role}: ${source.url} (${source.platform})`);
   }
-  return { bodies, sources, rejected, alternates };
+  // The main body found nothing: search the place's own official site for it.
+  const main = mainRole(place);
+  const mainBody = bodies.find((b) => b.role === main);
+  if (mainBody && mainBody.coverage === "not_found") {
+    const [found] = (await siteAlternates(ctx, place, main, [...ownHosts])).filter((s) => !used.has(s.url));
+    if (found) {
+      Object.assign(mainBody, { name: found.verification.bodyName ?? mainBody.name, sourceId: found.sourceId, coverage: "covered", portalUrl: found.url });
+      sources.push(found);
+      progress("discover", `${main}: ${found.url} (found on the place's own site)`);
+    }
+  }
+  return { bodies, sources, rejected, alternates, ownHosts: [...ownHosts] };
+}
+
+export function mainRole(place: Place): BodyRole {
+  return place.kind === "county" ? "county_executive" : "executive";
+}
+
+/** Site-scoped second pass for one body on up to two of the place's own hosts. Best effort. */
+export async function siteAlternates(ctx: Ctx, place: Place, role: BodyRole, hosts: string[]): Promise<Source[]> {
+  const body = bodiesFor(place).find((b) => b.role === role);
+  if (!body) return [];
+  const out: Source[] = [];
+  const token = place.name.toLowerCase().replace(/ (county|parish|borough)$/, "").replace(/[^a-z]/g, "");
+  const ordered = [...hosts].sort((a, b) => Number(b.replace(/[^a-z]/g, "").includes(token)) - Number(a.replace(/[^a-z]/g, "").includes(token)));
+  for (const host of ordered.slice(0, 2)) {
+    try {
+      const v = await verify(ctx, place, role, await discoverOnSite(ctx, place, body, host));
+      out.push(...v.accepted.filter((s) => readerFor(s.platform) !== null));
+    } catch (err) {
+      ctx.log(`site search on ${host} failed: ${String(err).slice(0, 120)}`);
+    }
+  }
+  return out;
 }
 
 export interface ReadResult {
@@ -150,11 +187,13 @@ function longDate(iso: string): string {
   return new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
-export function readSources(ctx: Ctx, placeId: string, sources: Source[], progress: Progress = () => {}, alternates: Record<string, Source[]> = {}): Promise<ReadResult> {
-  return withSpend(ctx, placeId, () => readSourcesInner(ctx, sources, progress, alternates, placeId.slice(0, 2).toUpperCase()));
+export type MoreSources = (role: BodyRole) => Promise<Source[]>;
+
+export function readSources(ctx: Ctx, placeId: string, sources: Source[], progress: Progress = () => {}, alternates: Record<string, Source[]> = {}, more?: MoreSources): Promise<ReadResult> {
+  return withSpend(ctx, placeId, () => readSourcesInner(ctx, sources, progress, alternates, placeId.slice(0, 2).toUpperCase(), more));
 }
 
-async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress, alternates: Record<string, Source[]>, state: string): Promise<ReadResult> {
+async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress, alternates: Record<string, Source[]>, state: string, more?: MoreSources): Promise<ReadResult> {
   const window = windowFor(ctx.now);
   const meetings: Meeting[] = [];
   const items: AgendaItem[] = [];
@@ -180,7 +219,16 @@ async function readSourcesInner(ctx: Ctx, sources: Source[], progress: Progress,
     let source = first;
     let listed: ListedMeeting[] = await safeList(source);
     const hasAgenda = (l: ListedMeeting[]) => l.some((m) => m.agendaPublished !== false);
-    for (const alt of alternates[first.role] ?? []) {
+    const altList = [...(alternates[first.role] ?? [])];
+    let askedMore = false;
+    for (let i = 0; i < altList.length || (!askedMore && more && !hasAgenda(listed)); i++) {
+      if (i >= altList.length) {
+        // Last resort for the main body: a search restricted to the place's own official site.
+        askedMore = true;
+        altList.push(...(await more!(first.role)));
+        if (i >= altList.length) break;
+      }
+      const alt = altList[i];
       if (hasAgenda(listed)) break;
       if (taken.has(alt.url)) continue;
       const altListed = await safeList(alt);

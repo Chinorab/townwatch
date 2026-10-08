@@ -13,7 +13,7 @@ export interface ExtractResult {
 
 export interface TavilyApi {
   credits: number;
-  search(query: string, opts?: { maxResults?: number; excludeDomains?: string[] }): Promise<SearchResult[]>;
+  search(query: string, opts?: { maxResults?: number; excludeDomains?: string[]; includeDomains?: string[] }): Promise<SearchResult[]>;
   extract(urls: string[], opts?: { depth?: "basic" | "advanced" }): Promise<{ results: ExtractResult[]; failed: { url: string; error: string }[] }>;
   map(url: string, opts?: { instructions?: string; limit?: number; selectPaths?: string[] }): Promise<string[]>;
 }
@@ -45,13 +45,14 @@ export class Tavily implements TavilyApi {
     this.credits += typeof usage?.credits === "number" ? usage.credits : fallback;
   }
 
-  async search(query: string, opts: { maxResults?: number; excludeDomains?: string[] } = {}) {
+  async search(query: string, opts: { maxResults?: number; excludeDomains?: string[]; includeDomains?: string[] } = {}) {
     const j = await this.post("search", {
       query,
       search_depth: "basic",
       max_results: opts.maxResults ?? 10,
       country: "united states",
       ...(opts.excludeDomains?.length ? { exclude_domains: opts.excludeDomains } : {}),
+      ...(opts.includeDomains?.length ? { include_domains: opts.includeDomains } : {}),
     });
     this.count(j, 1);
     return (j.results as SearchResult[]) ?? [];

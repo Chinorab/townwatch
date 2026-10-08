@@ -4,10 +4,10 @@
 // Every stage is cached, so a step that is retried or resumed later repays nothing.
 import { randomBytes } from "node:crypto";
 import { placeLabel } from "@/lib/places";
-import type { AgendaItem, Analysis, Briefing, Explanation, Meeting, ModelCall, Place, Source } from "@/lib/schemas";
+import type { AgendaItem, Analysis, BodyRole, Briefing, Explanation, Meeting, ModelCall, Place, Source } from "@/lib/schemas";
 import type { KV } from "@/lib/store";
 import type { Ctx } from "./context";
-import { findSources, readSources, settleCoverage, withSpend, type SourcesResult } from "./run";
+import { findSources, mainRole, readSources, settleCoverage, siteAlternates, withSpend, type SourcesResult } from "./run";
 import { triage } from "./stages/triage";
 import { route } from "./stages/route";
 import { draftKey, explainAll, type ExplainInput } from "./stages/explain";
@@ -98,7 +98,8 @@ async function step(ctx: Ctx, a: Analysis): Promise<void> {
     }
     case "reading": {
       const found = (await ctx.kv.get<SourcesResult>(k(id, "found")))!;
-      const read = await readSources(ctx, place.placeId, found.sources, () => {}, found.alternates);
+      const more = (role: BodyRole) => (role === mainRole(place) ? siteAlternates(ctx, place, role, found.ownHosts ?? []) : Promise.resolve([]));
+      const read = await readSources(ctx, place.placeId, found.sources, () => {}, found.alternates, more);
       const settled = settleCoverage(found, read);
       await ctx.kv.set(k(id, "found"), settled, JOB_TTL);
       await ctx.kv.set(k(id, "read"), { meetings: read.meetings, items: read.items, headers: [...read.headers.entries()] } satisfies ReadState, JOB_TTL);

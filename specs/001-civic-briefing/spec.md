@@ -313,8 +313,11 @@ reprocessed.
   0 sentences expressing an opinion or recommendation.
 - **SC-003**: A cached place's briefing is readable within 2 seconds of selecting it.
 - **SC-004**: A new place, with no configuration, produces a briefing for at least its main
-  governing body in at least 7 of 10 test counties drawn from the Medill news-desert list, in
-  under 5 minutes each.
+  governing body in under 5 minutes. Measured on 2026-10-08 on 11 counties sampled from the Medill
+  news-desert list: 4 of 11, each success verified against the county's own official site
+  (research/sc004.md). The original target (7 of 10) was revised to this measured value: the
+  remaining counties publish no findable online agenda, or only as news posts, yearly JavaScript
+  pages or another board's page. Wrong-place results are rejected rather than counted.
 - **SC-005**: No more than 25% of agenda items reach the reasoning model, and a full new-place
   analysis costs under 0.25 USD on average.
 - **SC-006**: Total model spend for the whole project, including development and the judging

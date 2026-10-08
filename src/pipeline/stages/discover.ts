@@ -39,3 +39,17 @@ export async function discover(ctx: Ctx, place: Place, body: { role: BodyRole; p
     30 * 86_400,
   );
 }
+
+/** Second pass on the place's own official site: when the main body's agenda page was not among
+ *  the general results (Sussex County, VA keeps it on sussexcountyva.gov under yearly pages). */
+export async function discoverOnSite(ctx: Ctx, place: Place, body: { role: BodyRole; phrase: string }, host: string): Promise<Candidate[]> {
+  return cached(
+    ctx.kv,
+    `discoversite:${place.placeId}:${body.role}:${host}:${sha256(body.phrase).slice(0, 8)}`,
+    async () =>
+      (await ctx.tavily.search(`${body.phrase} meeting agendas minutes ${ctx.now.getUTCFullYear()}`, { maxResults: 8, includeDomains: [host] }))
+        .filter((r) => !isExcludedHost(r.url))
+        .map((r) => ({ role: body.role, url: r.url, title: r.title ?? "", snippet: (r.content ?? "").slice(0, 300), score: r.score ?? 0 })),
+    30 * 86_400,
+  );
+}
