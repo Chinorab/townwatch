@@ -4,7 +4,7 @@ import { Playfair_Display, Public_Sans } from "next/font/google";
 import "./globals.css";
 import styles from "./layout.module.css";
 
-const serif = Playfair_Display({ variable: "--font-serif", subsets: ["latin"], weight: ["700", "800"], style: ["normal", "italic"] });
+const serif = Playfair_Display({ variable: "--font-serif", subsets: ["latin"], weight: ["700", "800"] });
 const sans = Public_Sans({ variable: "--font-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
