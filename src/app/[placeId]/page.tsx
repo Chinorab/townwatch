@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Info } from "@phosphor-icons/react/dist/ssr";
 import { getBriefing } from "@/lib/briefings";
 import { STATE_NAMES } from "@/lib/places";
+import { lookupPlace } from "@/lib/place-index";
+import { StartAnalysis } from "@/components/progress/StartAnalysis";
 import { Story } from "@/components/briefing/Story";
 import { AlsoOnAgenda } from "@/components/briefing/AlsoOnAgenda";
 import { longDate, ROLE_LABEL } from "@/components/briefing/format";
@@ -11,7 +13,8 @@ import styles from "@/components/briefing/briefing.module.css";
 
 export async function generateMetadata(props: PageProps<"/[placeId]">): Promise<Metadata> {
   const b = await getBriefing((await props.params).placeId);
-  return { title: b ? `This week in ${b.placeName}` : "Place not found" };
+  const name = b?.placeName ?? lookupPlace((await props.params).placeId)?.name;
+  return { title: name ? `This week in ${name}` : "Place not found" };
 }
 
 export default function PlacePage(props: PageProps<"/[placeId]">) {
@@ -37,7 +40,19 @@ function BriefingSkeleton() {
 async function BriefingView({ params }: { params: Promise<{ placeId: string }> }) {
   const { placeId } = await params;
   const b = await getBriefing(placeId);
-  if (!b) notFound();
+  if (!b) {
+    const p = lookupPlace(placeId);
+    if (!p) notFound();
+    return (
+      <div className="wrap">
+        <header className={styles.masthead}>
+          <p className={styles.dateline}>{p.name}, {STATE_NAMES[p.state]}</p>
+          <h1 className={styles.title}>This week in {p.name}</h1>
+        </header>
+        <StartAnalysis placeId={p.placeId} placeName={p.name} stateName={STATE_NAMES[p.state]} />
+      </div>
+    );
+  }
 
   const [lead, ...rest] = b.headlineItems;
   const covered = b.bodies.filter((x) => x.coverage === "covered");
@@ -53,7 +68,7 @@ async function BriefingView({ params }: { params: Promise<{ placeId: string }> }
         <h1 className={styles.title}>This week in {b.placeName}</h1>
         <p className={styles.dek}>
           What {covered.map((c) => `the ${c.name.replace(new RegExp(`^${b.placeName}\\s+`, "i"), "")}`).join(" and ") || "local bodies"}{" "}
-          {covered.length > 1 ? "are" : "is"} deciding, explained from their official agendas.
+          {covered.length > 1 ? "are deciding, explained from their official agendas." : "is deciding, explained from its official agendas."}
         </p>
         <p className={styles.notice}>
           <Info aria-hidden size={20} weight="regular" className={styles.icon} />

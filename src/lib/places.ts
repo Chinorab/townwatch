@@ -24,16 +24,16 @@ function titleCase(slug: string): string {
     .join(" ");
 }
 
-export function placeFromId(placeId: string, countyName?: string): Place {
+export function placeFromId(placeId: string, countyName?: string, official?: { name: string; kind: "county" | "town" } | null): Place {
   const m = placeId.match(/^([a-z]{2})-([a-z0-9-]+)$/);
   if (!m) throw new Error(`Invalid place id "${placeId}" (expected e.g. nc-edgecombe-county)`);
   const state = m[1].toUpperCase();
   const stateName = STATE_NAMES[state];
   if (!stateName) throw new Error(`Unknown state "${state}"`);
-  const kind = COUNTY_SUFFIX.test(m[2]) ? "county" : "town";
+  const kind = official?.kind ?? (COUNTY_SUFFIX.test(m[2]) ? "county" : "town");
   return {
     placeId,
-    name: titleCase(m[2]),
+    name: official?.name ?? titleCase(m[2]),
     kind,
     state,
     stateName,

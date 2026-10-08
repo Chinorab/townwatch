@@ -7,7 +7,7 @@ import { Models } from "@/lib/models";
 import { Tavily } from "@/lib/tavily";
 import { placeFromId } from "@/lib/places";
 import { replay, type Tape } from "@/pipeline/recording";
-import { analysePlace } from "@/pipeline/run";
+import { analysePlace } from "@/pipeline/jobs";
 import type { Ctx } from "@/pipeline/context";
 import { NOT_STATED, type Briefing } from "@/lib/schemas";
 

@@ -232,8 +232,9 @@ reprocessed.
   recognitions, appointments, roll call, consent agenda items not pulled for discussion).
   Step 2: a remaining item escalates when a decision is expected AND (its resident impact is
   medium or high OR its topic is taxes, budget, water and utilities, roads, schools, or zoning
-  and land use). Step 3: escalations are capped at 25% of a place's items, keeping the highest
-  impact first; items over the cap are listed as non-escalated with reason "cap".
+  and land use). Step 3: escalations are capped at 25% of a place's items and at 12 items per place
+  (added 2026-10-08: a 120-item city council agenda would otherwise cost about /usr/bin/bash.30), keeping
+  the highest impact first; items over the cap are listed as non-escalated with reason "cap".
 - **FR-012**: Every generated statement MUST carry a citation (source document, item number,
   page when known). Statements without a valid citation MUST be removed before display.
 - **FR-013**: Dates, amounts, places and names MUST match the source text; when absent, the

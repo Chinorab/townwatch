@@ -11,6 +11,9 @@ export const ESCALATION_TOPICS: ReadonlySet<Topic> = new Set([
   "zoning_land_use",
 ]);
 export const CAP_SHARE = 0.25;
+/** Absolute cap per place: a city council agenda runs to 120 items, and 25% of that would cost
+ *  about $0.30 of Ultra for one place (SC-005 targets under $0.25 per new place). */
+export const CAP_MAX = 12;
 
 const IMPACT_RANK = { low: 0, medium: 1, high: 2 } as const;
 
@@ -26,7 +29,7 @@ export function route(items: AgendaItem[]): AgendaItem[] {
     else decided.set(it.itemHash, { escalate: false, reason: "low_impact" });
   }
 
-  const cap = Math.max(1, Math.ceil(CAP_SHARE * items.length));
+  const cap = Math.min(CAP_MAX, Math.max(1, Math.ceil(CAP_SHARE * items.length)));
   candidates
     .sort((a, b) => IMPACT_RANK[b.triage!.impact] - IMPACT_RANK[a.triage!.impact] || b.triage!.importance - a.triage!.importance)
     .forEach((it, i) => decided.set(it.itemHash, i < cap ? { escalate: true, reason: "rule_match" } : { escalate: false, reason: "cap" }));

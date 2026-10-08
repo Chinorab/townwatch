@@ -3,7 +3,9 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { createContext } from "./context";
 import { placeFromId } from "@/lib/places";
-import { analysePlace, findSources, readSources } from "./run";
+import { lookupPlace } from "@/lib/place-index";
+import { findSources, readSources } from "./run";
+import { analysePlace } from "./jobs";
 import "./readers/register";
 import { Recorder } from "./recording";
 
@@ -25,7 +27,7 @@ async function main() {
   const recorder = recordFile ? new Recorder(recordFile) : undefined;
   const ctx = await createContext({ log: (m) => console.log("  ·", m), recorder });
   if (recorder) recorder.tape.now = ctx.now.toISOString();
-  const place = placeFromId(placeId, arg("county"));
+  const place = placeFromId(placeId, arg("county"), lookupPlace(placeId));
   const progress = (s: string, d: string) => console.log(`[${s}] ${d}`);
   const t0 = Date.now();
 

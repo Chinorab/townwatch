@@ -64,7 +64,19 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   sandboxed shell fails (`spawn UNKNOWN`). User can run `npx playwright install chromium` then `npx playwright test`.
 - Dev server: preview "townwatch-dev" (port 3747), entry added to D:\claude\.claude\launch.json (cwd townwatch).
 - Next 16 gotcha: cacheComponents is ON → read `params` inside <Suspense> (see src/app/[placeId]/page.tsx).
-- NEXT: US2 (T039-T052): Legistar + CivicClerk readers, jobs/advance API, limits, place search, progress view.
+- [x] Commits: e6656ce (MVP), dfa251d (LF line endings). Repo-local git identity Anas <atikniouine93@gmail.com>.
+- [x] US2 T039-T051 (2026-10-08): Legistar + CivicClerk readers (tenant from URL, paginated, most recent
+  meeting WITH a published agenda, public-comment speakers dropped), page lookup in platform PDFs,
+  persisted jobs advanced in steps (src/pipeline/jobs.ts; analysePlace = runToEnd), limits (1/visitor/day,
+  10/day, $12 stop, salted daily IP hash), API routes /api/analyses*, /api/places (Census Gazetteer index
+  src/data/places.json, 22,669 places), home search + StartAnalysis progress view. Absolute cap 12 Ultra
+  escalations per place (spec FR-011 updated). 82 tests.
+  Demo briefings cached: nc-edgecombe-county ($0.075), ga-columbia-county (web flow, Oct 6 meeting, pages on
+  all 16 citations, ~$0.18 incl. a first run on the wrong meeting), mi-ann-arbor (council + Washtenaw county,
+  $0.16). Washtenaw has 12 news sources per Medill (comparison line on home).
+- [ ] T052 SC-004 running: scripts/sc004.ts → research/sc004.md (Wasco + 10 sampled counties).
+- Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
+  "external"; Columbia GA school board (ccboe.net) not discovered.
 
 Spend so far (approx.): Nebius ~$0.45 of $29.69 · Tavily ~50 credits of 1,000.
 Local store: `.cache/kv` (FileKV) when UPSTASH env vars are empty. Briefing JSON: `.cache/briefings/`.

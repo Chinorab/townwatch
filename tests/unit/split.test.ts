@@ -84,3 +84,12 @@ describe("splitAgenda on multi-line numbering styles", () => {
     expect(splitAgenda(text, meta, null).map((i) => i.number)).toEqual(["A", "B", "C", "D"]);
   });
 });
+
+describe("splitAgenda on a CivicPlus HTML agenda (number alone on its line, heading below)", () => {
+  const text = "# CALL TO ORDER\n\n# PLEDGE OF ALLEGIANCE\n\n3.\n\n# APPROVAL OF MINUTES\n\n3.I.\n\n## Meeting Minutes\n\n**Documents:**\n\n4.\n\n# PUBLIC HEARINGS\n\n4.I.\n\n## SPEX-09-2026 – Sale, Russell & Kay, Owner/Applicant\n\nRequest a Special Exception Permit on Tax Parcel No. 8-A-87A.\n\n4.II.\n\n## RZ-01-2026 – Bauserman, Warren S. and Barbara, Owner/Applicant\n\nRequest a Rezoning.";
+  const items = splitAgenda(text, meta, null);
+  it("keeps roman sub-numbers and drops the section headings", () => {
+    expect(items.map((i) => i.number)).toEqual(["3.I", "4.I", "4.II"]);
+    expect(items[1].title).toBe("SPEX-09-2026 – Sale, Russell & Kay, Owner/Applicant");
+  });
+});

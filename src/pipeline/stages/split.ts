@@ -59,6 +59,20 @@ function parenMarkers(text: string): Marker[] {
   return out;
 }
 
+// CivicPlus HTML agendas: the number stands alone on its line ("4.", "4.II."), the title follows
+// as a heading on the next line ("## RZ-01-2026 – Bauserman ...").
+const LINE = /^[ \t]*(\d{1,2}(?:\.(?:\d{1,2}|[IVXL]{1,5}|[A-Z]))*)\.?[ \t]*$/gm;
+
+function lineMarkers(text: string): Marker[] {
+  const out: Marker[] = [];
+  for (const m of text.matchAll(LINE)) {
+    // Only when a heading follows: a bare number on its own line is otherwise a PDF page number.
+    if (!/^\s*\n\s*#/.test(text.slice(m.index! + m[0].length))) continue;
+    out.push({ index: m.index! + m[0].indexOf(m[1]), label: m[1], parts: m[1].split(".").map((p) => (/^\d+$/.test(p) ? Number(p) : 0)) });
+  }
+  return out;
+}
+
 function letterMarkers(text: string): Marker[] {
   const out: Marker[] = [];
   let expected = 0;
@@ -97,17 +111,20 @@ export function titleOf(body: string): string {
 
 export function splitAgenda(text: string, meta: Meta, pages: Pages): AgendaItem[] {
   // Use the numbering style that finds the most items; fewer than 3 means no reliable structure.
-  const markers = [numericMarkers(text), parenMarkers(text), letterMarkers(text)].sort((a, b) => b.length - a.length)[0];
+  const markers = [numericMarkers(text), parenMarkers(text), lineMarkers(text), letterMarkers(text)].sort((a, b) => b.length - a.length)[0];
   if (markers.length < 3) return [];
 
   const items: AgendaItem[] = [];
   markers.forEach((mk, i) => {
     const next = markers[i + 1];
-    const isParent = next !== undefined && next.parts.length > mk.parts.length && mk.parts.every((p, k) => p === next.parts[k]);
+    const isParent =
+      next !== undefined &&
+      (next.label.startsWith(`${mk.label}.`) || (next.parts.length > mk.parts.length && mk.parts.every((p, k) => p === next.parts[k])));
     if (isParent) return; // section heading: its children are the items
     const segment = text.slice(mk.index, next?.index ?? text.length).trim();
-    // Strip the marker: "(8)A Consent", "(8.6.B)Approval" (no space), "4.8. CONSIDERATION", "A. CALL".
-    const body = segment.replace(/^(?:\([^)]{1,12}\)[A-Z](?=\s)|\([^)]{1,12}\)|[^\s]+\.)\s*/, "");
+    // Strip the marker: "(8)A Consent", "(8.6.B)Approval" (no space), "4.8. CONSIDERATION", "A. CALL",
+    // and a lone "4.II." line followed by a "## Title" heading.
+    const body = segment.replace(/^(?:\([^)]{1,12}\)[A-Z](?=\s)|\([^)]{1,12}\)|[^\s]+\.|[\dA-Z.]+(?=\s*\n))\s*/, "").replace(/^#+\s*/, "");
     const page = pages?.find((p) => mk.index >= p.start && mk.index < p.end)?.n ?? null;
     items.push({
       itemHash: sha256(`${meta.docHash}|${mk.label}|${segment}`),

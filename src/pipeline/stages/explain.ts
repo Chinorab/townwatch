@@ -32,7 +32,7 @@ export interface ExplainInput {
 }
 
 export async function explainOne(ctx: Ctx, input: ExplainInput): Promise<{ draft: ExplanationDraft; model: string } | null> {
-  const key = `draft:${EXPLAIN_VERSION}:${ctx.models.config.explain}:${input.item.itemHash}`;
+  const key = draftKey(ctx, input.item.itemHash);
   const hit = await ctx.kv.get<{ draft: ExplanationDraft; model: string }>(key);
   if (hit) return hit;
   const user = `Place: ${input.placeLabel}
@@ -71,4 +71,8 @@ export async function explainAll(ctx: Ctx, inputs: ExplainInput[], limit = 4) {
   }
   await Promise.all(Array.from({ length: Math.min(limit, inputs.length) }, worker));
   return results;
+}
+
+export function draftKey(ctx: Ctx, itemHash: string): string {
+  return `draft:${EXPLAIN_VERSION}:${ctx.models.config.explain}:${itemHash}`;
 }

@@ -96,3 +96,11 @@ describe("readDocument", () => {
     expect(text.length).toBeGreaterThan(500);
   });
 });
+
+describe("CivicPlus AgendaCenter links", () => {
+  it("reads the date from the file name and prefers the PDF over the HTML view", () => {
+    const docs = parseListing("[Agenda](/AgendaCenter/ViewFile/Agenda/_09242026-569?html=true)", "https://co.caroline.va.us/AgendaCenter");
+    expect(docs[0].date).toBe("2026-09-24");
+    expect(docs[0].urls[0]).toBe("https://co.caroline.va.us/AgendaCenter/ViewFile/Agenda/_09242026-569");
+  });
+});

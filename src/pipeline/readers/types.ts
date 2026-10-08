@@ -20,6 +20,9 @@ export interface ListedMeeting {
   time: string | null;
   location: string | null;
   bodyName: string;
+  /** Record text about the meeting itself (e.g. "meets at 6:00 p.m. in the ... Auditorium"),
+   *  added to the source text that statements may quote. */
+  note?: string;
   agendaUrl: string;
   docs: Omit<DocRef, "meetingId">[];
   /** Present when the platform returns numbered items: no document splitting needed. */

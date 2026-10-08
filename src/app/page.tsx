@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { DEMO_PLACES } from "@/lib/briefings";
+import { PlaceSearch } from "@/components/search/PlaceSearch";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -11,10 +12,7 @@ export default function Home() {
         <p className={styles.sub}>
           Townwatch reads the official agendas of your county, town and school board, and explains each decision in plain English.
         </p>
-        <a href="#places" className={styles.cta}>
-          Find your place
-          <ArrowRight aria-hidden size={18} weight="bold" />
-        </a>
+        <PlaceSearch />
       </section>
 
       <section className={styles.why} aria-labelledby="why-title">

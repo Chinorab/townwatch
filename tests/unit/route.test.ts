@@ -57,6 +57,13 @@ describe("route (FR-011)", () => {
     expect(route(items).filter((i) => i.routing!.escalate)).toHaveLength(2);
   });
 
+  it("never escalates more than 12 items per place, however long the agenda", () => {
+    const many = Array.from({ length: 120 }, (_, i) => item(`i${i}`, { impact: "high", importance: (i % 5) + 1 }));
+    const routed = route(many);
+    expect(routed.filter((i) => i.routing!.escalate)).toHaveLength(12);
+    expect(routed.filter((i) => i.routing!.escalate).every((i) => i.triage!.importance === 5)).toBe(true);
+  });
+
   it("escalates at least one item when there are fewer than four", () => {
     expect(reasons([item("a", { impact: "high" })]).a).toBe("rule_match");
   });

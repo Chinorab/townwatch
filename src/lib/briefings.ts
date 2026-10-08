@@ -12,4 +12,6 @@ export async function getBriefing(placeId: string): Promise<Briefing | null> {
 /** Places pre-analysed for the demo. A display list only: the pipeline knows nothing of it. */
 export const DEMO_PLACES = [
   { placeId: "nc-edgecombe-county", name: "Edgecombe County", state: "North Carolina", note: "No local news source left (Medill, 2025)" },
+  { placeId: "ga-columbia-county", name: "Columbia County", state: "Georgia", note: "No local news source left (Medill, 2025)" },
+  { placeId: "mi-ann-arbor", name: "Ann Arbor", state: "Michigan", note: "For comparison: its county has 12 local news sources (Medill, 2025)" },
 ] as const;

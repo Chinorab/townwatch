@@ -18,6 +18,9 @@ function iso(y: number, m: number, d: number): string | null {
   return dt.toISOString().slice(0, 10);
 }
 
+// CivicPlus AgendaCenter encodes the meeting date in file names: /ViewFile/Agenda/_10052026-409
+const CIVICPLUS_DATE = /_(\d{2})(\d{2})(20\d\d)-\d+/;
+
 export function dateFrom(s: string): string | null {
   let m = s.match(MONTH_DATE);
   if (m) return iso(+m[3], MONTHS[m[1].toLowerCase()], +m[2]);
@@ -25,6 +28,8 @@ export function dateFrom(s: string): string | null {
   if (m) return iso(+m[3], +m[1], +m[2]);
   m = s.match(ISO_DATE);
   if (m) return iso(+m[1], +m[2], +m[3]);
+  m = s.match(CIVICPLUS_DATE);
+  if (m) return iso(+m[3], +m[1], +m[2]);
   return null;
 }
 
@@ -53,10 +58,15 @@ export interface ListingDoc {
 
 function candidates(href: string, base: string): string[] {
   const h = href.trim();
-  if (/^https?:\/\//i.test(h)) return [new URL(h).toString()];
-  const pageRelative = new URL(h, base).toString();
-  const rootRelative = new URL(h.replace(/^\.?\//, ""), new URL(base).origin + "/").toString();
-  return pageRelative === rootRelative ? [pageRelative] : [pageRelative, rootRelative];
+  let urls: string[];
+  if (/^https?:\/\//i.test(h)) urls = [new URL(h).toString()];
+  else {
+    const pageRelative = new URL(h, base).toString();
+    const rootRelative = new URL(h.replace(/^\.?\//, ""), new URL(base).origin + "/").toString();
+    urls = pageRelative === rootRelative ? [pageRelative] : [pageRelative, rootRelative];
+  }
+  // CivicPlus serves the same agenda as HTML (?html=true) and as a PDF: the PDF gives pages.
+  return urls.flatMap((u) => (/\/AgendaCenter\/ViewFile\/.*[?&]html=true/i.test(u) ? [u.replace(/[?&]html=true/i, ""), u] : [u]));
 }
 
 export function parseListing(markdown: string, baseUrl: string): ListingDoc[] {

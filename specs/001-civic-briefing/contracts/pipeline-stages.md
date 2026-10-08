@@ -26,5 +26,5 @@ CLI: `npm run pipeline -- <stage> --place nc-edgecombe-county [--from-cache]`, a
 2. `decisionExpected == false` → `info_only`
 3. `impact in (medium, high)` or `topic in (taxes, budget_spending, water_utilities,
    roads_transport, schools, zoning_land_use)` → candidate, else `low_impact`
-4. Sort candidates by (impact, importance) desc; keep the first `ceil(0.25 * totalItems)`;
+4. Sort candidates by (impact, importance) desc; keep the first `min(12, ceil(0.25 * totalItems))`;
    the rest → `cap`.

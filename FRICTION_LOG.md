@@ -44,6 +44,15 @@ Format: date, product, what happened, impact, suggestion.
 - **2026-10-08 — Nano is not fully deterministic at temperature 0.** The same 70 items with the
   same prompt gave 10 escalations in the eval run and 15 in the pipeline run an hour later.
   Caching triage by item hash makes the product stable regardless.
+- **2026-10-08 — Nano accepts same-named places in other states.** Asked whether a page belongs to
+  "Cumberland County, Virginia", Nano 30B accepted `cumberlandcountync.gov`; for Lincoln County,
+  Colorado it accepted `lincolncountync.gov` and `co.lincoln.nc.us`, although the prompt names the
+  state and says a same-named place elsewhere is not the right place. It also accepted a city
+  site (The Dalles) for the county. Fixed with a deterministic domain rule plus ranking; geography
+  checks belong in code, not in a small model.
+- **2026-10-08 — Nano treats official agenda platforms as "external".** BoardDocs pages of real
+  school districts were rejected with "redirects to external portal; not directly hosted by
+  government body", despite the prompt listing BoardDocs as an official platform.
 - **2026-10-08 — Super disagreed on a trivial case.** "Approve a $48,500 contract" → Super said
   `decision: false`; Nano, Lightning and Ultra said `true`. One sample only; to be measured on a
   real labelled set before choosing the triage model.
@@ -62,6 +71,17 @@ Format: date, product, what happened, impact, suggestion.
   the response.
 - **2026-10-08 — JS portals extract empty.** CivicClerk portals (`*.portal.civicclerk.com`) fail
   in Extract; BoardDocs returns the shell page without documents.
+
+- **2026-10-08 — Search finds the right site, not always the right page.** For small counties,
+  Tavily search returns the county's own domain reliably, but the top hit is often a "meet the
+  commissioners" page or a news post rather than the agenda list. A `site:`-scoped follow-up or
+  Map with instructions is needed one hop later. Not a bug; worth a cookbook example for civic data.
+
+## Civic platforms (not sponsor tools, noted for the write-up)
+
+- CivicClerk's public API pages at 15 events with `@odata.nextLink`; busy counties need many pages.
+- Legistar lists public-comment speakers as numbered agenda items; they must be filtered out.
+- CivicPlus AgendaCenter encodes meeting dates only in file names (`_MMDDYYYY-id`).
 
 ## Devpost
 

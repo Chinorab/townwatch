@@ -1,0 +1,108 @@
+.panel {
+  padding: var(--s6) 0 var(--s7);
+  max-width: 760px;
+}
+.title {
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 800;
+}
+.lead {
+  margin-top: var(--s4);
+  font-size: 20px;
+  color: var(--ink-2);
+  max-width: 56ch;
+}
+.button {
+  margin-top: var(--s5);
+  font: inherit;
+  font-weight: 600;
+  font-size: 18px;
+  padding: var(--s3) var(--s5);
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  cursor: pointer;
+}
+.button:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+.button:active {
+  transform: translateY(1px);
+}
+.linkButton {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.stages {
+  list-style: none;
+  padding: 0;
+  margin: var(--s5) 0 0;
+  border-top: 1px solid var(--ink);
+}
+.stages li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s4) 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 19px;
+}
+.stageIcon {
+  display: flex;
+}
+.stageDetail {
+  font-size: 16px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.todo {
+  color: var(--ink-2);
+}
+.active .stageLabel {
+  font-weight: 600;
+}
+.done .stageIcon {
+  color: var(--ink);
+}
+.failed {
+  color: var(--accent);
+}
+.limit {
+  margin-top: var(--s5);
+  padding: var(--s4) 0;
+  border-top: 1px solid var(--ink);
+  font-size: 18px;
+  display: grid;
+  gap: var(--s2);
+}
+.limit a {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .spin {
+    animation: spin 1.2s linear infinite;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 640px) {
+  .stages li {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+  .stageDetail {
+    grid-column: 2;
+  }
+}

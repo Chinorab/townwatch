@@ -102,22 +102,22 @@ new place the same day is refused politely.
 
 ### Tests for User Story 2
 
-- [ ] T039 [P] [US2] Legistar reader tests on the Ann Arbor fixture (client from URL, events in window, numbered items) in tests/unit/legistar.test.ts
-- [ ] T040 [P] [US2] CivicClerk reader tests on the Columbia fixture (tenant from URL, events, nested item tree flattened with outline numbers, PDF and plain-text file URLs) in tests/unit/civicclerk.test.ts
-- [ ] T041 [P] [US2] Job state machine tests (stage transitions, lock contention returns 409, failed body does not fail analysis, resume after interruption) in tests/unit/jobs.test.ts
-- [ ] T042 [P] [US2] Limits tests (visitor 1/day with salted hash, global 10/day, 12 USD ledger stop, cached places still served) in tests/unit/limits.test.ts
+- [X] T039 [P] [US2] Legistar reader tests on the Ann Arbor fixture (client from URL, events in window, numbered items) in tests/unit/legistar.test.ts
+- [X] T040 [P] [US2] CivicClerk reader tests on the Columbia fixture (tenant from URL, events, nested item tree flattened with outline numbers, PDF and plain-text file URLs) in tests/unit/civicclerk.test.ts
+- [X] T041 [P] [US2] Job state machine tests (stage transitions, lock contention returns 409, failed body does not fail analysis, resume after interruption) in tests/unit/jobs.test.ts
+- [X] T042 [P] [US2] Limits tests (visitor 1/day with salted hash, global 10/day, 12 USD ledger stop, cached places still served) in tests/unit/limits.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T043 [P] [US2] Implement the Legistar reader (webapi.legistar.com/v1/{client}/events and eventitems, agenda file URL as citation target) in src/pipeline/readers/legistar.ts
-- [ ] T044 [P] [US2] Implement the CivicClerk reader ({tenant}.api.civicclerk.com/v1 Events, Meetings/{agendaId}, GetMeetingFileStream PDF parsed per page) in src/pipeline/readers/civicclerk.ts
-- [ ] T045 [US2] Add platform detection by URL pattern (legistar, civicclerk, boarddocs → `unreadable` with portal link, generic) in src/pipeline/readers/index.ts
-- [ ] T046 [US2] Implement the analysis job state machine and `advance()` (one bounded unit per call, lock TTL 330 s, progress counters) in src/pipeline/jobs.ts
-- [ ] T047 [US2] Implement limits and ledger (daily salt, visitor hash, counters, budget stop) in src/lib/limits.ts
-- [ ] T048 [US2] Implement `POST /api/analyses`, `GET /api/analyses/[id]`, `POST /api/analyses/[id]/advance` per contracts/http-api.md with `maxDuration` set in src/app/api/analyses/
-- [ ] T049 [US2] Implement `GET /api/places?q=` with state disambiguation from a US counties and places list in src/data/ and src/app/api/places/route.ts
-- [ ] T050 [US2] Build the progress view (stages, live counts, bodies covered or not with portal links, limit messages) in src/components/progress/ and wire it in src/app/[placeId]/page.tsx
-- [ ] T051 [US2] Run real analyses for Ann Arbor MI and Columbia County GA, review briefings by hand, log frictions in FRICTION_LOG.md
+- [X] T043 [P] [US2] Implement the Legistar reader (webapi.legistar.com/v1/{client}/events and eventitems, agenda file URL as citation target) in src/pipeline/readers/legistar.ts
+- [X] T044 [P] [US2] Implement the CivicClerk reader ({tenant}.api.civicclerk.com/v1 Events, Meetings/{agendaId}, GetMeetingFileStream PDF parsed per page) in src/pipeline/readers/civicclerk.ts
+- [X] T045 [US2] Add platform detection by URL pattern (legistar, civicclerk, boarddocs → `unreadable` with portal link, generic) in src/pipeline/readers/index.ts
+- [X] T046 [US2] Implement the analysis job state machine and `advance()` (one bounded unit per call, lock TTL 330 s, progress counters) in src/pipeline/jobs.ts
+- [X] T047 [US2] Implement limits and ledger (daily salt, visitor hash, counters, budget stop) in src/lib/limits.ts
+- [X] T048 [US2] Implement `POST /api/analyses`, `GET /api/analyses/[id]`, `POST /api/analyses/[id]/advance` per contracts/http-api.md with `maxDuration` set in src/app/api/analyses/
+- [X] T049 [US2] Implement `GET /api/places?q=` with state disambiguation from a US counties and places list in src/data/ and src/app/api/places/route.ts
+- [X] T050 [US2] Build the progress view (stages, live counts, bodies covered or not with portal links, limit messages) in src/components/progress/ and wire it in src/app/[placeId]/page.tsx
+- [X] T051 [US2] Run real analyses for Ann Arbor MI and Columbia County GA, review briefings by hand, log frictions in FRICTION_LOG.md
 - [ ] T052 [US2] Measure SC-004: run discovery to briefing on 10 counties sampled from data/medill-2025-news-deserts.tsv, record success, time and cost per county in research/sc004.md (respect the budget: stop if average cost > 0.25 USD)
 
 **Checkpoint**: live analysis works; 4 demo places cached.
