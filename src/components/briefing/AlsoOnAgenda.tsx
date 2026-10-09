@@ -21,7 +21,7 @@ export function AlsoOnAgenda({ b }: { b: Briefing }) {
           <summary>
             <span className={styles.summaryBody}>{m.body}</span>
             <span className={styles.summaryMeta}>
-              {longDate(m.date)}, {items.length} items
+              {longDate(m.date)}, {items.length} {items.length === 1 ? "item" : "items"}
             </span>
           </summary>
           <ol className={styles.itemList}>

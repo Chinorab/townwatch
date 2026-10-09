@@ -52,9 +52,10 @@ export function PlaceSearch() {
           id={inputId}
           className={styles.input}
           type="search"
+          name="place"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Edgecombe County, NC"
+          placeholder="Edgecombe County, NC…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           aria-describedby={`${inputId}-help`}

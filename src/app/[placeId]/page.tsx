@@ -146,10 +146,16 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
           {missing.map((c) => (
             <li key={c.role}>
               <strong>{ROLE_LABEL[c.role]}</strong>
-              <span className={styles.notStated}>{c.coverage === "unreadable" ? "Agendas published on a portal Townwatch cannot read yet." : "No agenda found online."}</span>
-              {c.coverage === "unreadable" && c.portalUrl && (
+              <span className={styles.notStated}>
+                {c.coverage === "unreadable"
+                  ? "Agendas published on a portal Townwatch cannot read yet."
+                  : c.portalUrl
+                    ? "A page was found, but no dated agenda could be read from it."
+                    : "No agenda found online."}
+              </span>
+              {c.portalUrl && (
                 <a href={c.portalUrl} className={styles.portal}>
-                  Open the portal
+                  {c.coverage === "unreadable" ? "Open the portal" : "Open the page"}
                 </a>
               )}
             </li>

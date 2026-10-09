@@ -38,6 +38,7 @@ export function StartAnalysis({ placeId, placeName, stateName }: { placeId: stri
   const [a, setA] = useState<AnalysisView | null>(null);
   const [limit, setLimit] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
   const running = useRef(false);
 
   const drive = useCallback(
@@ -75,9 +76,18 @@ export function StartAnalysis({ placeId, placeName, stateName }: { placeId: stri
 
   const start = useCallback(async () => {
     setFailure(null);
-    const r = await fetch("/api/analyses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ placeId }) });
-    const j = await r.json();
-    if (r.status === 429) return setLimit(j.error.message);
+    setStarting(true);
+    let r: Response;
+    let j: { analysisId: string; status: Status; error?: { message: string } };
+    try {
+      r = await fetch("/api/analyses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ placeId }) });
+      j = await r.json();
+    } catch {
+      return setFailure("Townwatch could not be reached. Check your connection and try again.");
+    } finally {
+      setStarting(false);
+    }
+    if (r.status === 429) return setLimit(j.error?.message ?? "No new place can be started today.");
     if (!r.ok) return setFailure(j.error?.message ?? "This place cannot be read.");
     if (j.status === "done") return router.refresh();
     setA({ analysisId: j.analysisId, status: j.status, progress: { sourcesFound: 0, docsRead: 0, itemsTriaged: 0, itemsEscalated: 0, itemsExplained: 0 }, error: null });
@@ -97,8 +107,8 @@ export function StartAnalysis({ placeId, placeName, stateName }: { placeId: stri
             Townwatch can find the official agendas of {placeName}, {stateName}, and explain what is being decided. It takes a few minutes and you can
             watch it happen.
           </p>
-          <button type="button" className={styles.button} onClick={start}>
-            Read the agendas
+          <button type="button" className={styles.button} onClick={start} disabled={starting}>
+            {starting ? "Starting…" : "Read the agendas"}
           </button>
         </>
       )}

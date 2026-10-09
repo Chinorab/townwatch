@@ -39,7 +39,7 @@ export function HowThisWasMade({ b }: { b: Briefing }) {
           <span className={`${styles.big} num`}>{p.sourcesKept.length}</span>
           <span className={styles.what}>official agenda {p.sourcesKept.length === 1 ? "source" : "sources"} kept</span>
           <span className={styles.how}>
-            Found by web search, then checked by Nemotron 3 Nano: official, right place, right board. {fmt(p.sourcesRejected.length)} candidates rejected.
+            Found by web search, then checked by Nemotron 3 Nano: official, right place, right board. {fmt(p.sourcesRejected.length)} {p.sourcesRejected.length === 1 ? "candidate" : "candidates"} rejected.
           </span>
         </li>
         <li aria-hidden className={styles.arrow}>
@@ -66,7 +66,7 @@ export function HowThisWasMade({ b }: { b: Briefing }) {
           <span className={styles.what}>explained by Nemotron 3 Ultra 550B</span>
           <span className={styles.how}>
             Each sentence checked against the source text: {fmt(p.droppedStatements)} removed.
-            {fallbacks > 0 ? ` ${fallbacks} written by Nemotron 3 Super after Ultra did not answer in time.` : ""}
+            {fallbacks > 0 ? ` ${fallbacks} written by Nemotron 3 Super because Ultra gave no usable answer in time.` : ""}
           </span>
         </li>
       </ol>
@@ -120,8 +120,8 @@ export function HowThisWasMade({ b }: { b: Briefing }) {
         </table>
       </div>
       <p className={styles.note}>
-        {view.pricesAreEstimates ? "Costs are estimates from published per token prices. " : ""}
-        Web search and document reading used {fmt(p.totals.tavilyCredits)} Tavily credits.
+        {view.pricesAreEstimates ? "Costs are estimates: Nebius shows its official per token prices only after login. " : ""}
+        Web search and document reading used {fmt(p.totals.tavilyCredits)} Tavily {p.totals.tavilyCredits === 1 ? "credit" : "credits"}.
       </p>
 
       <details className={styles.sources}>

@@ -9,7 +9,7 @@ import { geocodeAddress } from "@/client/geocode";
 import { rankNearby, NEAR_RADIUS_MILES, type NearStatus, type Point } from "@/client/near";
 import styles from "./near.module.css";
 
-const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), { ssr: false, loading: () => <div className={styles.mapLoading}>Loading the map</div> });
+const PinMap = dynamic(() => import("./PinMap").then((m) => m.PinMap), { ssr: false, loading: () => <div className={styles.mapLoading}>Loading the map…</div> });
 
 export interface LocatedItem {
   id: string;
@@ -81,12 +81,13 @@ export function NearYou({ placeName, stateCode, centre, located }: { placeName: 
                 className={styles.input}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                name="address"
                 autoComplete="street-address"
-                placeholder="Street, town, state"
+                placeholder="Street, town, state…"
                 aria-describedby={`${inputId}-help`}
               />
               <button className={styles.button} type="submit" disabled={busy}>
-                {busy ? "Looking up" : "Show what is near me"}
+                {busy ? "Looking up…" : "Show what is near me"}
               </button>
             </div>
             <p id={`${inputId}-help`} className={styles.help}>
@@ -112,7 +113,7 @@ export function NearYou({ placeName, stateCode, centre, located }: { placeName: 
                         {i.miles < 0.1 ? "here" : `${i.miles.toFixed(1)} mi`}
                       </span>
                       <span>
-                        <a href={i.href}>{i.title}</a>
+                        <a href={i.href}>{i.title.trim().replace(/[:;,.]$/, "")}</a>
                         <span className={styles.meta}>
                           Mentions {i.placeText}. {i.meetingBody}, item {i.number}.
                         </span>

@@ -37,6 +37,12 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[id] {
+  scroll-margin-top: var(--s5);
 }
 
 body {

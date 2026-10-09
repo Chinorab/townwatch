@@ -20,7 +20,7 @@ export default function Home() {
           In 213 US counties, no local news source is left.
         </h2>
         <p className={styles.whyBody}>
-          In 1,524 more, only one remains. That is about 50 million people with little or no local news, according to the{" "}
+          In 1,525 more, only one remains. That is almost 50 million people with little or no local news, according to the{" "}
           <a href="https://localnewsinitiative.northwestern.edu/projects/state-of-local-news/2025/">State of Local News 2025</a> report by
           Northwestern University&rsquo;s Medill school. Nobody reads the agenda anymore, so decisions on taxes, water, roads and schools pass
           without residents knowing.

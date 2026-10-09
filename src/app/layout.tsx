@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Playfair_Display, Public_Sans } from "next/font/google";
 import "./globals.css";
@@ -10,6 +10,13 @@ const sans = Public_Sans({ variable: "--font-sans", subsets: ["latin"] });
 export const metadata: Metadata = {
   title: { default: "Townwatch", template: "%s | Townwatch" },
   description: "What your county, town and school board are deciding, explained in plain English from their official agendas.",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#121417" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
