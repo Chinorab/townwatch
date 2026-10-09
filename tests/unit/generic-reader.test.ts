@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { parseListing, docKind, dateFrom, forRole } from "@/pipeline/readers/generic";
+import { parseListing, docKind, dateFrom, forRole, toMeetings } from "@/pipeline/readers/generic";
 import { readDocument } from "@/pipeline/stages/read";
 import { detectPlatform } from "@/pipeline/readers/index";
 import { testContext } from "@/pipeline/context";
@@ -149,6 +149,11 @@ describe("Agenda Center pages that list every board (Porter County, IN)", () => 
   it("keeps only the board looked for", () => {
     expect(forRole(docs, "county_executive").map((d) => d.date)).toEqual(["2026-10-06"]);
     expect(forRole(docs, "planning").map((d) => d.date)).toEqual(["2026-10-13"]);
+  });
+
+  it("names each meeting after its section when the page gives no board name", () => {
+    const [m] = toMeetings(forRole(docs, "planning"), null, { from: "2026-09-25", to: "2026-10-30" }, "Planning Commission");
+    expect(m.bodyName).toBe("Plan Commission");
   });
 
   it("leaves pages without board headings alone", () => {

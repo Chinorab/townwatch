@@ -6,7 +6,7 @@ import type { Source } from "@/lib/schemas";
 import type { Ctx } from "../context";
 import { inWindow, type ListedMeeting, type Reader, type Window } from "./types";
 import { readDocument } from "../stages/read";
-import { matchesRole } from "./bodies";
+import { DEFAULT_BODY_NAME, matchesRole } from "./bodies";
 
 const MONTHS: Record<string, number> = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 // Lookarounds instead of \b: file names glue words with "_" ("Agenda _June 22 2026_Special").
@@ -137,7 +137,8 @@ async function extractPage(ctx: Ctx, url: string): Promise<string> {
   }, 86_400);
 }
 
-export function toMeetings(docs: ListingDoc[], bodyName: string, window: Window): ListedMeeting[] {
+/** `bodyName` null: each meeting is named after the heading its agenda sits under, else `fallback`. */
+export function toMeetings(docs: ListingDoc[], bodyName: string | null, window: Window, fallback = ""): ListedMeeting[] {
   let picked = docs.filter((d) => inWindow(d.date, window));
   if (picked.length === 0) {
     // Nothing in the window: show the latest past meeting, dated, rather than nothing (spec edge
@@ -155,7 +156,7 @@ export function toMeetings(docs: ListingDoc[], bodyName: string, window: Window)
         date,
         time: null,
         location: null,
-        bodyName,
+        bodyName: bodyName ?? (agenda.section && BODY_HEADING.test(agenda.section) ? agenda.section : fallback),
         agendaUrl: agenda.urls.at(-1)!,
         docs: ds.map((d) => ({ urls: d.urls, kind: d.kind })),
       };
@@ -193,7 +194,6 @@ async function resolveMonths(ctx: Ctx, docs: ListingDoc[], window: Window): Prom
 
 export const genericReader: Reader = {
   async list(ctx, source: Source, window) {
-    const bodyName = source.verification.bodyName ?? source.role;
     let docs = forRole(parseListing(await extractPage(ctx, source.url), source.url), source.role);
 
     if (docs.length === 0) {
@@ -211,6 +211,7 @@ export const genericReader: Reader = {
         .slice(0, 2);
       for (const u of hops) docs = docs.concat(forRole(parseListing(await extractPage(ctx, u), u), source.role));
     }
-    return toMeetings(await resolveMonths(ctx, docs, window), bodyName, window);
+    // The board's own name: from the verified page, else the heading its agenda sits under.
+    return toMeetings(await resolveMonths(ctx, docs, window), source.verification.bodyName ?? null, window, DEFAULT_BODY_NAME[source.role]);
   },
 };

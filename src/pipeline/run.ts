@@ -7,6 +7,7 @@ import type { Ctx } from "./context";
 import { discover, discoverOnSite } from "./stages/discover";
 import { verify } from "./stages/verify";
 import { readerFor } from "./readers/index";
+import { DEFAULT_BODY_NAME } from "./readers/bodies";
 import { windowFor, type ListedMeeting } from "./readers/types";
 import { pdfText, readDocument } from "./stages/read";
 import { splitAgenda } from "./stages/split";
@@ -65,7 +66,7 @@ async function findSourcesInner(ctx: Ctx, place: Place, progress: Progress): Pro
     rejected.push(...v.rejected);
     alternates[body.role] = v.accepted.filter((s) => s !== source && readerFor(s.platform) !== null).slice(0, 2);
     if (!source) {
-      bodies.push({ role: body.role, name: body.role, sourceId: null, coverage: "not_found", portalUrl: null });
+      bodies.push({ role: body.role, name: DEFAULT_BODY_NAME[body.role], sourceId: null, coverage: "not_found", portalUrl: null });
       progress("discover", `${body.role}: no official source found`);
       continue;
     }
@@ -73,7 +74,7 @@ async function findSourcesInner(ctx: Ctx, place: Place, progress: Progress): Pro
     const readable = readerFor(source.platform) !== null;
     bodies.push({
       role: body.role,
-      name: source.verification.bodyName ?? body.role,
+      name: source.verification.bodyName ?? DEFAULT_BODY_NAME[body.role],
       sourceId: source.sourceId,
       coverage: readable ? "covered" : "unreadable",
       portalUrl: source.url,
@@ -144,7 +145,7 @@ export function settleCoverage(found: SourcesResult, read: ReadResult): SourcesR
       rejected.push({ url: src.url, reason: "no dated agendas found on this page" });
       continue;
     }
-    bodies.push({ ...b, name: src.verification.bodyName ?? b.name, sourceId: src.sourceId, portalUrl: src.url, coverage: "covered" });
+    bodies.push({ ...b, name: src.verification.bodyName ?? read.meetings.find((m) => m.sourceId === src.sourceId)?.body ?? b.name, sourceId: src.sourceId, portalUrl: src.url, coverage: "covered" });
     sources.push(src);
   }
   for (const list of Object.values(found.alternates ?? {}))

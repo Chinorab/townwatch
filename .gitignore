@@ -17,3 +17,8 @@ next-env.d.ts
 npm-debug.log*
 test-results/
 playwright-report/
+
+# Video recording: raw frames and intermediate clips are regenerated, not versioned
+docs/media/raw/
+docs/media/work/
+docs/media/*.mp4

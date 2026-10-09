@@ -10,7 +10,7 @@ Near you ranks items by distance from your address. The address goes from your b
 
 Here is how it was made. Tavily found the official agenda pages, and Nemotron Nano checked that each one is official and belongs to the right county. Nano then sorted all seventy-three items, ten per request, for a third of a cent. Only nine decisions went to Nemotron Ultra, five hundred and fifty billion parameters, on Nebius Token Factory. Code checked every sentence against the source before it was published. The whole county cost eight cents.
 
-Now a place nobody has read yet, another news desert. No setup, no list of websites: Tavily searches, Nano verifies, the agendas are read, every item is sorted, and the decisions that matter are explained. A few minutes later, the county has a briefing.
+Now Porter County, Indiana: a hundred and seventy-five thousand people, and not one local news source. Nobody has read it here yet. No setup, no list of websites: Tavily searches, Nano verifies, the agendas are read, every item is sorted, and the decisions that matter are explained. A few minutes later, the county has a briefing.
 
 A small model looks at everything, the large one only at what matters, and code checks both. Across three places, Nano sorted a hundred and ninety-one items for one cent; Ultra was ninety-seven percent of the bill. Every night, a refresh re-reads the places people follow and pays only for new agendas; it ships as a container that runs as a Nebius serverless job.
 

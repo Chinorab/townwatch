@@ -75,34 +75,38 @@ Code checked every sentence against the source before it was published.
 The whole county cost eight cents.
 
 20
-00:01:22,005 --> 00:01:25,494
-Now a place nobody has read yet, another news desert.
+00:01:22,005 --> 00:01:28,776
+Now Porter County, Indiana: a hundred and seventy-five thousand people, and not one local news source.
 
 21
-00:01:25,494 --> 00:01:36,666
-No setup, no list of websites: Tavily searches, Nano verifies, the agendas are read, every item is sorted, and the decisions that matter are explained.
+00:01:28,776 --> 00:01:30,546
+Nobody has read it here yet.
 
 22
-00:01:36,666 --> 00:01:39,335
-A few minutes later, the county has a briefing.
+00:01:30,546 --> 00:01:41,718
+No setup, no list of websites: Tavily searches, Nano verifies, the agendas are read, every item is sorted, and the decisions that matter are explained.
 
 23
-00:01:39,335 --> 00:01:45,143
-A small model looks at everything, the large one only at what matters, and code checks both.
+00:01:41,718 --> 00:01:44,388
+A few minutes later, the county has a briefing.
 
 24
-00:01:45,143 --> 00:01:53,242
-Across three places, Nano sorted a hundred and ninety-one items for one cent; Ultra was ninety-seven percent of the bill.
+00:01:44,388 --> 00:01:50,195
+A small model looks at everything, the large one only at what matters, and code checks both.
 
 25
-00:01:53,242 --> 00:02:03,476
-Every night, a refresh re-reads the places people follow and pays only for new agendas; it ships as a container that runs as a Nebius serverless job.
+00:01:50,195 --> 00:01:58,294
+Across three places, Nano sorted a hundred and ninety-one items for one cent; Ultra was ninety-seven percent of the bill.
 
 26
-00:02:03,476 --> 00:02:04,427
-Townwatch.
+00:01:58,294 --> 00:02:08,528
+Every night, a refresh re-reads the places people follow and pays only for new agendas; it ships as a container that runs as a Nebius serverless job.
 
 27
-00:02:04,427 --> 00:02:08,059
+00:02:08,528 --> 00:02:09,479
+Townwatch.
+
+28
+00:02:09,479 --> 00:02:13,111
 The agenda, read for the towns that lost their newspaper.
 

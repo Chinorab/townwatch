@@ -12,6 +12,14 @@ const ROLE: Record<BodyRole, RegExp> = {
 /** Sub-bodies that share words with the main ones ("Council Policy Agenda Committee"). */
 const NOT_MAIN = /committee|subcommittee|caucus|work(ing)? ?session|study session|authority|advisory|retirement|retiree|pension|benefit plan|assessors|election|appeals|youth/i;
 
+/** Name shown when the official page does not give the board's name. */
+export const DEFAULT_BODY_NAME: Record<BodyRole, string> = {
+  executive: "Town Council",
+  county_executive: "County Commission",
+  school_board: "School Board",
+  planning: "Planning Commission",
+};
+
 export function matchesRole(name: string, role: BodyRole): boolean {
   return ROLE[role].test(name) && !NOT_MAIN.test(name);
 }
