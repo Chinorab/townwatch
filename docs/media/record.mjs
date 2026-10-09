@@ -10,7 +10,8 @@ import { join } from "node:path";
 
 const BASE = process.env.BASE ?? "http://localhost:3800";
 const NEW_PLACE = process.env.NEW_PLACE ?? "in-porter-county";
-const OUT = "docs/media/raw/take";
+const OUTRO_ONLY = Boolean(process.env.OUTRO_ONLY); // films only the finished briefing of NEW_PLACE
+const OUT = OUTRO_ONLY ? "docs/media/raw/outro" : "docs/media/raw/take";
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(join(OUT, "frames"), { recursive: true });
 
@@ -61,6 +62,7 @@ async function glideTo(locator, offset = 140, ms = 1800) {
   await glide(top - offset, ms);
 }
 
+if (!OUTRO_ONLY) {
 // 1. Home page, the 213 counties.
 await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
 await page.mouse.move(mouse.x, mouse.y);
@@ -138,8 +140,21 @@ await wait(9000);
 await glideTo(page.getByRole("table"), 260, 1800);
 await wait(11000);
 
+}
+
+if (OUTRO_ONLY) {
+  await page.goto(`${BASE}/${NEW_PLACE}`, { waitUntil: "networkidle" });
+  await page.mouse.move(760, 300);
+  await wait(800);
+  mark("outro");
+  await wait(4000);
+  await glide(900, 4000);
+  await wait(4000);
+  mark("outro-end");
+}
+
 // 7. A news desert read live (skipped in rehearsals: it can be filmed once per place).
-if (!process.env.SKIP_LIVE) {
+if (!process.env.SKIP_LIVE && !OUTRO_ONLY) {
 mark("live");
 await page.goto(`${BASE}/${NEW_PLACE}`, { waitUntil: "networkidle" });
 await page.mouse.move(mouse.x, mouse.y);

@@ -2,7 +2,7 @@
 // voice-over and its subtitles. Each passage of the take is cut to the length of its narration;
 // the live analysis is sped up, and says so on screen.
 //   node docs/media/build-video.mjs
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, linkSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, resolve } from "node:path";
 
@@ -10,7 +10,8 @@ const FFMPEG = process.env.FFMPEG ?? "C:/Users/Anas/AppData/Local/Microsoft/WinG
 const M = "docs/media";
 const TAKE = join(M, "raw/take");
 const WORK = join(M, "work");
-rmSync(WORK, { recursive: true, force: true });
+const REUSE = Boolean(process.env.REUSE); // keep clips already built in docs/media/work
+if (!REUSE) rmSync(WORK, { recursive: true, force: true });
 mkdirSync(WORK, { recursive: true });
 const ff = (args) => execFileSync(FFMPEG, ["-v", "error", "-y", ...args], { stdio: "inherit" });
 
@@ -49,34 +50,41 @@ const starts = BEATS.map(([, w]) => cueAt(w));
 const voiceEnd = cues.at(-1).c;
 const span = (i) => (i + 1 < starts.length ? starts[i + 1] : voiceEnd + 2.5) - starts[i];
 
-const take = JSON.parse(readFileSync(join(TAKE, "take.json"), "utf8"));
-const frames = take.frames.slice().sort((a, b) => a.t - b.t);
-const mark = (b) => {
-  const m = take.marks.find((x) => x.beat === b);
+const load = (dir) => {
+  const j = JSON.parse(readFileSync(join(dir, "take.json"), "utf8"));
+  return { dir, marks: j.marks, frames: j.frames.slice().sort((a, b) => a.t - b.t) };
+};
+const take = load(TAKE);
+// The finished briefing of the live place, filmed again after a label fix (record.mjs OUTRO_ONLY).
+const outro = load(join(M, "raw/outro"));
+const mark = (b, src = take) => {
+  const m = src.marks.find((x) => x.beat === b);
   if (!m) throw new Error(`No mark ${b}`);
   return m.t;
 };
 
-/** Writes a clip of the take between t0 and t1 (wall-clock seconds), played `speed` times faster. */
-function clip(name, t0, t1, speed = 1, label = "") {
-  const list = [];
-  const inside = frames.filter((f) => f.t >= t0 && f.t < t1);
-  const before = frames.filter((f) => f.t < t0).at(-1);
-  const seq = before ? [{ ...before, t: t0 }, ...inside] : inside;
-  seq.forEach((f, i) => {
-    const next = i + 1 < seq.length ? seq[i + 1].t : t1;
-    list.push(`file '${resolve(TAKE, "frames", f.name).replace(/\\/g, "/")}'`, `duration ${((next - f.t) / speed).toFixed(4)}`);
-  });
-  list.push(`file '${resolve(TAKE, "frames", seq.at(-1).name).replace(/\\/g, "/")}'`);
-  const txt = join(WORK, `${name}.txt`);
-  writeFileSync(txt, list.join("\n"));
-  const vf = ["scale=1920:1080:flags=lanczos", "fps=30", "format=yuv420p"];
+/** Writes a clip of a take between t0 and t1 (wall-clock seconds), played `speed` times faster:
+ *  a constant 30 fps sequence where each output frame shows the screen as it was at that instant. */
+function clip(name, t0, t1, speed = 1, label = "", src = take) {
+  if (REUSE && existsSync(join(WORK, `${name}.mp4`))) return join(WORK, `${name}.mp4`);
+  const { frames } = src;
+  const dir = join(WORK, name);
+  mkdirSync(dir, { recursive: true });
+  const n = Math.max(1, Math.round(((t1 - t0) / speed) * 30));
+  let j = 0;
+  for (let k = 0; k < n; k++) {
+    const tt = t0 + (k / 30) * speed;
+    while (j + 1 < frames.length && frames[j + 1].t <= tt) j++;
+    linkSync(resolve(src.dir, "frames", frames[j].name), join(dir, `${String(k).padStart(6, "0")}.jpg`));
+  }
+  const vf = ["scale=1920:1080:flags=lanczos", "format=yuv420p"];
   if (label) vf.push(`drawtext=text='${label}':fontfile='C\\:/Windows/Fonts/segoeui.ttf':fontsize=34:fontcolor=white:box=1:boxcolor=0x16181dcc:boxborderw=18:x=w-tw-60:y=60`);
-  ff(["-f", "concat", "-safe", "0", "-i", txt, "-vf", vf.join(","), "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-r", "30", join(WORK, `${name}.mp4`)]);
+  ff(["-framerate", "30", "-i", join(dir, "%06d.jpg"), "-vf", vf.join(","), "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-r", "30", join(WORK, `${name}.mp4`)]);
   return join(WORK, `${name}.mp4`);
 }
 
 function card(name, png, seconds) {
+  if (REUSE && existsSync(join(WORK, `${name}.mp4`))) return join(WORK, `${name}.mp4`);
   ff(["-loop", "1", "-t", seconds.toFixed(3), "-i", join(M, "cards", png), "-vf", "scale=1920:1080,fps=30,format=yuv420p", "-c:v", "libx264", "-preset", "medium", "-crf", "18", join(WORK, `${name}.mp4`)]);
   return join(WORK, `${name}.mp4`);
 }
@@ -96,12 +104,12 @@ BEATS.forEach(([beat], i) => {
     parts.push(clip(`${String(i + 1).padStart(2, "0")}-${beat}`, t0, t1, speed));
   } else if (beat === "live") {
     const a = mark("live"), r = mark("live-running"), d = mark("live-done");
-    const intro = r - a, outro = 6;
-    const middle = Math.max(want - intro - outro, 6);
+    const intro = r - a, outroLen = 9;
+    const middle = Math.max(want - intro - outroLen, 6);
     parts.push(clip("07a-live", a, r));
     const factor = (d - r) / middle;
     parts.push(clip("07b-live", r, d, factor, `Sped up ${Math.round(factor)}x`));
-    parts.push(clip("07c-live", d, d + outro));
+    parts.push(clip("07c-live", mark("outro", outro), mark("outro", outro) + outroLen, 1, "", outro));
   } else if (beat === "arch") {
     parts.push(card("08-arch", "03-architecture.png", want));
   } else if (beat === "closing") {
@@ -138,20 +146,25 @@ const shifted = cues.map((c, i) => {
 });
 writeFileSync(join(WORK, "subs.srt"), shifted.join("\n"));
 
-// Voice: each beat's audio placed at its beat start.
-const filters = [];
-const inputs = [];
+// Voice: one piece per beat, padded with silence to the beat's length, joined end to end.
+const probe = (f) => +execFileSync(FFMPEG.replace("ffmpeg.exe", "ffprobe.exe"), ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f]).toString();
+const pieces = [join(WORK, "a-title.wav")];
+ff(["-f", "lavfi", "-t", String(TITLE), "-i", "anullsrc=r=24000:cl=mono", pieces[0]]);
 BEATS.forEach((_, b) => {
-  const from = starts[b], to = b + 1 < starts.length ? starts[b + 1] : voiceEnd + 0.5;
-  filters.push(`[1:a]atrim=${from.toFixed(3)}:${to.toFixed(3)},asetpts=PTS-STARTPTS,adelay=${Math.round(beatStartOut[b] * 1000)}|${Math.round(beatStartOut[b] * 1000)}[a${b}]`);
-  inputs.push(`[a${b}]`);
+  const from = starts[b], to = b + 1 < starts.length ? starts[b + 1] : voiceEnd + 0.3;
+  const len = (b + 1 < beatStartOut.length ? beatStartOut[b + 1] : probe(join(WORK, "silent.mp4"))) - beatStartOut[b];
+  const out = join(WORK, `a-${b}.wav`);
+  ff(["-i", join(M, "voiceover.mp3"), "-af", `atrim=${from.toFixed(3)}:${to.toFixed(3)},asetpts=PTS-STARTPTS,apad,atrim=0:${len.toFixed(3)}`, "-ar", "24000", "-ac", "1", out]);
+  pieces.push(out);
 });
-filters.push(`${inputs.join("")}amix=inputs=${inputs.length}:normalize=0[aout]`);
+writeFileSync(join(WORK, "audio.txt"), pieces.map((p) => `file '${resolve(p).replace(/\\/g, "/")}'`).join("\n"));
+ff(["-f", "concat", "-safe", "0", "-i", join(WORK, "audio.txt"), join(WORK, "voice.wav")]);
+const silentLength = +execFileSync(FFMPEG.replace("ffmpeg.exe", "ffprobe.exe"), ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", join(WORK, "silent.mp4")]).toString();
 const subs = resolve(WORK, "subs.srt").replace(/\\/g, "/").replace(":", "\\:");
 ff([
-  "-i", join(WORK, "silent.mp4"), "-i", join(M, "voiceover.mp3"),
-  "-filter_complex", `${filters.join(";")};[0:v]subtitles='${subs}':force_style='FontName=Segoe UI,FontSize=17,PrimaryColour=&H00FFFFFF,BackColour=&H99161816,BorderStyle=4,Outline=0,Shadow=0,MarginV=36'[vout]`,
-  "-map", "[vout]", "-map", "[aout]", "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-c:a", "aac", "-b:a", "160k", "-shortest",
+  "-i", join(WORK, "silent.mp4"), "-i", join(WORK, "voice.wav"),
+  "-filter_complex", `[0:v]subtitles='${subs}':force_style='FontName=Segoe UI,FontSize=13,PrimaryColour=&H00FFFFFF,BackColour=&H18161816,BorderStyle=4,Outline=0,Shadow=0,MarginV=10'[vout]`,
+  "-map", "[vout]", "-map", "1:a", "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-c:a", "aac", "-b:a", "160k", "-t", String(silentLength),
   join(M, "townwatch-demo.mp4"),
 ]);
 const total = +execFileSync(FFMPEG.replace("ffmpeg.exe", "ffprobe.exe"), ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", join(M, "townwatch-demo.mp4")]).toString();
