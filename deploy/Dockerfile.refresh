@@ -1,0 +1,13 @@
+# Nightly refresh of followed places (US6), run as a Nebius Serverless AI job on a CPU VM.
+# The image holds code only: API keys arrive at run time as environment variables
+# (MysteryBox secrets passed with --env-secret), never in a layer.
+FROM node:24-slim
+WORKDIR /app
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 NODE_ENV=production
+COPY package.json package-lock.json ./
+# tsx runs the TypeScript pipeline directly, so dev dependencies are kept.
+RUN npm ci --include=dev --ignore-scripts && npm cache clean --force
+COPY tsconfig.json ./
+COPY src ./src
+USER node
+ENTRYPOINT ["npx", "tsx", "src/pipeline/cli.ts", "refresh"]

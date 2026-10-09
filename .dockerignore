@@ -1,0 +1,14 @@
+# Never send keys, caches or build output to an image build.
+.env
+.env.*
+.cache
+.next
+.vercel
+node_modules
+research
+tests
+test-results
+playwright-report
+specs
+docs
+*.log

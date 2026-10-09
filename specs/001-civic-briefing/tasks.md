@@ -175,8 +175,8 @@ cached views say they cost nothing new.
 25 Oct; otherwise document as next step in the README.
 
 - [x] T063 [US6] Implement `GET /api/cron/refresh` logic as a CLI command `npm run pipeline -- refresh` (new or changed documents only, no model call when nothing changed) in src/pipeline/refresh.ts
-- [ ] T064 [US6] Write deploy/Dockerfile.refresh for the pipeline CLI and push the image to Nebius Container Registry
-- [ ] T065 [US6] Write deploy/nightly.yml (GitHub Actions schedule running `nebius ai job create --image ... --env-secret ...` on a CPU preset) and test one run, log frictions in FRICTION_LOG.md
+- [ ] T064 [US6] Write deploy/Dockerfile.refresh for the pipeline CLI and push the image to Nebius Container Registry (written 2026-10-09; image goes to public GHCR from the workflow so the job needs no registry credentials; first push waits for the user's setup)
+- [ ] T065 [US6] Write deploy/nightly.yml (written as .github/workflows/nightly.yml 2026-10-09; one-run test waits for the user's Nebius service account and secrets, see deploy/README.md) (GitHub Actions schedule running `nebius ai job create --image ... --env-secret ...` on a CPU preset) and test one run, log frictions in FRICTION_LOG.md
 
 ---
 

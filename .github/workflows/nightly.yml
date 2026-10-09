@@ -1,0 +1,93 @@
+# Nightly refresh of every followed place (US6, FR-026).
+# Default: build the pipeline image, then run it as a Nebius Serverless AI job on a CPU VM.
+# Fallback: set the repository variable REFRESH_RUNNER=github to run the same command here.
+# Setup and secrets: deploy/README.md. Nothing runs until those secrets exist.
+name: Nightly refresh
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # 09:00 UTC, 5 am on the US East Coast, before the working day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: nightly-refresh
+  cancel-in-progress: false
+
+jobs:
+  image:
+    if: vars.REFRESH_RUNNER != 'github' && vars.NEBIUS_PROJECT_ID != ''
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.name.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: name
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/townwatch-refresh:${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/Dockerfile.refresh
+          push: true
+          tags: ${{ steps.name.outputs.image }}
+
+  nebius:
+    needs: image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install the Nebius AI Cloud CLI
+        run: |
+          curl -sSL https://artifacts.nebius.cloud/cli/install.sh | bash
+          echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
+      - name: Authenticate as the service account
+        env:
+          NEBIUS_CREDENTIALS: ${{ secrets.NEBIUS_SA_CREDENTIALS }}
+          SA_ID: ${{ vars.NEBIUS_SA_ID }}
+          PROJECT_ID: ${{ vars.NEBIUS_PROJECT_ID }}
+        run: |
+          mkdir -p ~/.nebius
+          printf '%s' "$NEBIUS_CREDENTIALS" > ~/.nebius/sa-credentials.json
+          chmod 600 ~/.nebius/sa-credentials.json
+          nebius profile create --endpoint api.nebius.cloud --service-account-file ~/.nebius/sa-credentials.json --parent-id "$PROJECT_ID" --profile townwatch
+      - name: Run the refresh as a Serverless AI job
+        run: |
+          nebius ai job create \
+            --name "townwatch-refresh-${GITHUB_RUN_ID}" \
+            --image "${{ needs.image.outputs.image }}" \
+            --platform cpu-d3 \
+            --preset 2vcpu-8gb \
+            --disk-size 50Gi \
+            --timeout 1h \
+            --restart-policy never \
+            --env-secret NEBIUS_API_KEY=townwatch-nebius-api-key \
+            --env-secret TAVILY_API_KEY=townwatch-tavily-api-key \
+            --env-secret KV_REST_API_URL=townwatch-kv-url \
+            --env-secret KV_REST_API_TOKEN=townwatch-kv-token
+
+  github:
+    if: vars.REFRESH_RUNNER == 'github'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      - run: npx tsx src/pipeline/cli.ts refresh
+        env:
+          NEBIUS_API_KEY: ${{ secrets.NEBIUS_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
+          KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}

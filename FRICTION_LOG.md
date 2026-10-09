@@ -20,6 +20,18 @@ Format: date, product, what happened, impact, suggestion.
   Lightning, Super and Ultra return `reasoning_tokens` and `prompt_cache_hit_tokens`. A cost meter
   must handle both shapes.
 
+- **2026-10-09 — Serverless jobs have no scheduler.** A nightly job needs an outside trigger
+  (here a GitHub Actions schedule calling `nebius ai job create`). A `--schedule` option on jobs
+  would make Nebius alone enough for periodic batch work.
+- **2026-10-09 — Job defaults are GPU-sized.** `nebius ai job create` defaults to an H100 or H200
+  platform and a 250 GiB disk. A CPU batch job that forgets `--platform cpu-d3 --preset
+  2vcpu-8gb --disk-size` would start a GPU VM. A CPU default, or a confirmation when no platform
+  is given, would avoid an expensive mistake.
+- **2026-10-09 — The docs are agent-friendly.** Every page is available as Markdown (`.md`) with
+  an `llms.txt` index, and the CI authentication page (service account, no browser) answered
+  everything needed to write the workflow. The secret store is called MysteryBox in the CLI
+  reference and SecretStash in the jobs guide, which is confusing.
+
 ## NVIDIA models
 
 - **2026-10-08 — Ultra reasons by default, and reasoning is billed as output.** A 76-token
