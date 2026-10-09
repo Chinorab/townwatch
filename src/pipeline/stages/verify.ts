@@ -60,7 +60,7 @@ const BODY_PAGE = /meeting|board|council|commission/i;
 /** A domain that names another state ("cumberlandcountync.gov" for Cumberland County, Virginia;
  *  "co.lincoln.nc.us" for Lincoln County, Colorado) cannot be the right place. Deterministic,
  *  because the model accepted both on 2026-10-08. */
-export function otherStateHost(url: string, state: string): string | null {
+export function otherStateHost(url: string, state: string, nameToken?: string): string | null {
   const host = new URL(url).hostname.toLowerCase();
   const squashed = host.replace(/[^a-z]/g, "");
   const own = STATE_NAMES[state]?.toLowerCase().replace(/[^a-z]/g, "");
@@ -69,6 +69,8 @@ export function otherStateHost(url: string, state: string): string | null {
     const s = code.toLowerCase();
     // "franklincotn.us" is Tennessee, "franklincoks.org" Kansas, "cumberlandcountync.gov" North Carolina
     if (new RegExp(`(county|co|\\.)${s}\\.(gov|us|org|com|net)$`).test(host)) return code;
+    // The place name glued to another state code: "townofporterny.gov" is Porter, New York.
+    if (nameToken && nameToken.length >= 4 && new RegExp(`${nameToken}${s}\\.(gov|us|org|com|net)$`).test(host)) return code;
     // Full state names too ("mcohio.org" is Montgomery County, Ohio), unless the host carries the
     // place's own state name (a "kansas" inside "arkansas" is not Kansas).
     const full = name.toLowerCase().replace(/[^a-z]/g, "");
@@ -96,17 +98,17 @@ function placeToken(place: Place, role: BodyRole): string {
 
 export async function verify(ctx: Ctx, place: Place, role: BodyRole, all: Candidate[]): Promise<VerifyResult> {
   const token = placeToken(place, role);
-  const foreign = all.filter((c) => otherStateHost(c.url, place.state));
+  const foreign = all.filter((c) => otherStateHost(c.url, place.state, token));
   const candidates = all.filter((c) => !foreign.includes(c));
   const result = await verifyCandidates(ctx, place, role, candidates);
   // Applied after the model so its prompt (and the cache) is unchanged: the model may accept a
   // neighbouring county's site, the domain rule overrides it.
   const otherCounty = result.accepted.filter((s) => otherCountyHost(s.url, token));
   return {
-    ownHosts: (result.ownHosts ?? []).filter((h) => !otherCountyHost(`https://${h}/`, token) && !otherStateHost(`https://${h}/`, place.state)),
+    ownHosts: (result.ownHosts ?? []).filter((h) => !otherCountyHost(`https://${h}/`, token) && !otherStateHost(`https://${h}/`, place.state, token)),
     accepted: result.accepted.filter((s) => !otherCounty.includes(s)),
     rejected: [
-      ...foreign.map((c) => ({ url: c.url, reason: `domain of another state (${otherStateHost(c.url, place.state)})` })),
+      ...foreign.map((c) => ({ url: c.url, reason: `domain of another state (${otherStateHost(c.url, place.state, token)})` })),
       ...otherCounty.map((s) => ({ url: s.url, reason: `domain of another county (${otherCountyHost(s.url, token)})` })),
       ...result.rejected,
     ],

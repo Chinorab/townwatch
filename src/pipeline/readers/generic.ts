@@ -6,6 +6,7 @@ import type { Source } from "@/lib/schemas";
 import type { Ctx } from "../context";
 import { inWindow, type ListedMeeting, type Reader, type Window } from "./types";
 import { readDocument } from "../stages/read";
+import { matchesRole } from "./bodies";
 
 const MONTHS: Record<string, number> = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 // Lookarounds instead of \b: file names glue words with "_" ("Agenda _June 22 2026_Special").
@@ -66,6 +67,8 @@ export interface ListingDoc {
   kind: "agenda" | "packet" | "minutes";
   label: string;
   urls: string[];
+  /** The heading the link sits under: a CivicPlus Agenda Center lists every board on one page. */
+  section?: string;
 }
 
 function candidates(href: string, base: string): string[] {
@@ -84,6 +87,8 @@ function candidates(href: string, base: string): string[] {
 export function parseListing(markdown: string, baseUrl: string): ListingDoc[] {
   const out: ListingDoc[] = [];
   const seen = new Set<string>();
+  const headings = [...markdown.matchAll(/^#{2,3}\s+(.+)$/gm)].map((h) => ({ at: h.index!, text: h[1].trim() }));
+  const sectionAt = (i: number) => headings.filter((h) => h.at < i).at(-1)?.text;
   for (const m of markdown.matchAll(LINK)) {
     const [, label, href] = m;
     if (/^(mailto|tel|javascript):|^#/i.test(href) || /\.(png|jpe?g|gif|svg)(\?|$)/i.test(href)) continue;
@@ -99,7 +104,7 @@ export function parseListing(markdown: string, baseUrl: string): ListingDoc[] {
     }
     if (seen.has(urls[0])) continue;
     seen.add(urls[0]);
-    out.push({ date: date ?? "", month, kind: docKind(label, href), label: label.trim(), urls });
+    out.push({ date: date ?? "", month, kind: docKind(label, href), label: label.trim(), urls, section: sectionAt(m.index!) });
   }
   return out;
 }
@@ -110,6 +115,18 @@ function decodeSafe(s: string): string {
   } catch {
     return s;
   }
+}
+
+const BODY_HEADING = /commission|council|board|court|jury|committee|planning|zoning|school|education|trustees|selectmen|aldermen/i;
+
+/** On a page that lists several boards under their own headings, keeps the documents of the
+ *  board looked for (Porter County, IN: the Agenda Center root mixes the commissioners, the plan
+ *  commission and the election board). Pages without board headings are left as they are. */
+export function forRole(docs: ListingDoc[], role: Source["role"]): ListingDoc[] {
+  const sections = new Set(docs.map((d) => d.section).filter((x): x is string => Boolean(x)));
+  if (sections.size < 2 || ![...sections].some((x) => BODY_HEADING.test(x))) return docs;
+  const kept = docs.filter((d) => matchesRole(`${d.section ?? ""} ${d.label}`, role));
+  return kept.length > 0 ? kept : docs.filter((d) => !d.section || !BODY_HEADING.test(d.section));
 }
 
 async function extractPage(ctx: Ctx, url: string): Promise<string> {
@@ -177,7 +194,7 @@ async function resolveMonths(ctx: Ctx, docs: ListingDoc[], window: Window): Prom
 export const genericReader: Reader = {
   async list(ctx, source: Source, window) {
     const bodyName = source.verification.bodyName ?? source.role;
-    let docs = parseListing(await extractPage(ctx, source.url), source.url);
+    let docs = forRole(parseListing(await extractPage(ctx, source.url), source.url), source.role);
 
     if (docs.length === 0) {
       // One hop deeper: the found page links to the actual agendas page. Pages for the current
@@ -192,7 +209,7 @@ export const genericReader: Reader = {
         .filter((u) => u !== source.url && new URL(u).host === host && /agenda|minute|meeting/i.test(u))
         .sort((a, b) => score(b) - score(a))
         .slice(0, 2);
-      for (const u of hops) docs = docs.concat(parseListing(await extractPage(ctx, u), u));
+      for (const u of hops) docs = docs.concat(forRole(parseListing(await extractPage(ctx, u), u), source.role));
     }
     return toMeetings(await resolveMonths(ctx, docs, window), bodyName, window);
   },

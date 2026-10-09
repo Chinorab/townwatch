@@ -19,6 +19,9 @@ describe("otherStateHost", () => {
 
   it("accepts the place's own state and neutral domains", () => {
     expect(otherStateHost("https://co.caroline.va.us/AgendaCenter", "VA")).toBeNull();
+    // Porter County, Indiana: the town of Porter, New York, glues its state code to the name.
+    expect(otherStateHost("https://www.townofporterny.gov/agendacenter", "IN", "porter")).toBe("NY");
+    expect(otherStateHost("https://www.portercountyin.gov/AgendaCenter", "IN", "porter")).toBeNull();
     expect(otherStateHost("https://www.wascocountyor.gov/x", "OR")).toBeNull();
     expect(otherStateHost("https://www.ecps.us/apps/pages/index.jsp", "NC")).toBeNull();
     expect(otherStateHost("https://columbiacoga.portal.civicclerk.com/", "GA")).toBeNull();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { parseListing, docKind, dateFrom } from "@/pipeline/readers/generic";
+import { parseListing, docKind, dateFrom, forRole } from "@/pipeline/readers/generic";
 import { readDocument } from "@/pipeline/stages/read";
 import { detectPlatform } from "@/pipeline/readers/index";
 import { testContext } from "@/pipeline/context";
@@ -127,5 +127,32 @@ describe("month-only agenda links (Vernon Parish, LA)", () => {
     const meetings = await genericReader.list(ctx, src as never, { from: "2026-09-24", to: "2026-10-29" });
     expect(meetings.map((m) => m.date)).toEqual(["2026-07-21"]);
     expect(meetings[0].docs.map((d) => d.kind).sort()).toEqual(["agenda", "minutes"]);
+  });
+});
+
+describe("Agenda Center pages that list every board (Porter County, IN)", () => {
+  const md = [
+    "# Agenda Center",
+    "## Commissioners",
+    "| **Oct 6, 2026** — Posted Oct 2, 2026 [Board of Commissioners' Meeting](/AgendaCenter/ViewFile/Agenda/_10062026-2236) |",
+    "## Plan Commission",
+    "| **Oct 13, 2026** — Posted Oct 8, 2026 [Plan Commission Meeting](/AgendaCenter/ViewFile/Agenda/_10132026-2237) |",
+    "## Election Board",
+    "| **Sep 30, 2026** — Posted Sep 25, 2026 [Public Test of Election Equipment](/AgendaCenter/ViewFile/Agenda/_09302026-2232) |",
+  ].join("\n");
+  const docs = parseListing(md, "https://www.portercountyin.gov/agendacenter");
+
+  it("records the heading each document sits under", () => {
+    expect(docs.map((d) => d.section)).toEqual(["Commissioners", "Plan Commission", "Election Board"]);
+  });
+
+  it("keeps only the board looked for", () => {
+    expect(forRole(docs, "county_executive").map((d) => d.date)).toEqual(["2026-10-06"]);
+    expect(forRole(docs, "planning").map((d) => d.date)).toEqual(["2026-10-13"]);
+  });
+
+  it("leaves pages without board headings alone", () => {
+    const years = parseListing("## 2026\n[Regular Meeting](/a/_10062026-1.pdf)\n## 2025\n[Regular Meeting](/a/_10072025-2.pdf)", "https://x.gov/agendas");
+    expect(forRole(years, "planning")).toHaveLength(2);
   });
 });

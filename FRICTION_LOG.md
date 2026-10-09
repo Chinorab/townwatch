@@ -116,3 +116,11 @@ Format: date, product, what happened, impact, suggestion.
 
 - **2026-10-08 — Rules page returns HTTP 403 to non-browser clients**, so the rules had to be read
   through a real browser.
+
+## Civic data (more)
+
+- **2026-10-09 — Agenda Center roots mix every board.** Porter County, IN lists the commissioners,
+  the plan commission and the election board on one CivicPlus page, under `##` headings that
+  Tavily Extract keeps. The reader now follows those headings. Indiana calls its planning body a
+  "Plan Commission". The commissioners' category page came back without the latest meeting
+  (6 October) that the root page listed, the same day: Extract may serve an older copy of a page.
