@@ -98,8 +98,15 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   so prompts and the test tape stay stable), letterhead other-state check, month-only dates (no guessed day),
   county body names by state (Quorum Court AR, Fiscal Court KY, Commissioners Court TX, Police Jury LA,
   Board of Supervisors VA/MS/IA/CA/WI/AZ), discover cache key includes the phrase. History in research/sc004.md.
-- NEXT (proposed to user 2026-10-08): one bounded generic attempt (site-scoped search on the county's own
-  domain) OR revise SC-004 target; then deploy (T070) on Vercel + Upstash; README, video.
+- [x] SC-004 run 5 (site-scoped second search): still 4/11 → target revised in spec to the measured value.
+- [x] 2026-10-09 Production build OK (Playfair single style fix), no key or API host in .next/static.
+- [x] Public repo https://github.com/Chinorab/townwatch (MIT detected, branch master).
+- [x] Vercel project `townwatch` (scope anas02-projects, prj_8P7WmTlu88dpvOOjPz3ltKAtMSUk) linked to the repo
+  via Vercel CLI (the Vercel MCP connector has no access to that scope: 403). `vercel link` adds
+  VERCEL_OIDC_TOKEN to .env.local and `.env*` to .gitignore: revert the .gitignore change (it would hide .env.example).
+- [ ] USER: Upstash Redis via Vercel Storage + NEBIUS_API_KEY / TAVILY_API_KEY in Vercel env vars, then copy
+  UPSTASH_REDIS_REST_URL/TOKEN into .env.local → I run `scripts/push-cache.ts` (929 entries) → deploy prod.
+- NEXT after deploy: README + architecture diagram (T071), Devpost text (T072), quickstart on prod (T073), video.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.
 

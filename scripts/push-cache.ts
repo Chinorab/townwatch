@@ -1,16 +1,19 @@
 // Copies the local cache (.cache/kv, FileKV) to Upstash Redis so the deployed app serves the demo
 // briefings, documents, triage and explanations already paid for. Locks and expired entries are
 // skipped; remaining TTLs are kept.
-// Run: node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/push-cache.ts [--dry]
+// Run: vercel env pull .env.production.local --environment production, then
+// node --env-file=.env.local --env-file=.env.production.local node_modules/tsx/dist/cli.mjs scripts/push-cache.ts [--dry]
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Redis } from "@upstash/redis";
+import { redisCredentials } from "../src/lib/store";
 
 const dry = process.argv.includes("--dry");
-const url = process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+const creds = redisCredentials();
+const url = creds?.url;
+const token = creds?.token;
 if (!dry && (!url || !token)) {
-  console.error("UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set in .env.local");
+  console.error("Upstash credentials missing (UPSTASH_REDIS_REST_* or KV_REST_API_*)");
   process.exit(1);
 }
 const redis = dry ? null : new Redis({ url: url!, token: token! });
