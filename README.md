@@ -54,7 +54,7 @@ All model calls go through the Token Factory OpenAI-compatible API (`src/lib/mod
 | `nvidia/nemotron-3-super-120b-a12b` | Fallback when Ultra times out or returns no JSON | thinking off | 2 | 1,557 | 1,051 (0) | $0.001 |
 | **Total, three demo places** | | | **93** | | | **$0.41** |
 
-Measured on the three demo briefings in October 2026 (191 agenda items, 29 explained). Costs use estimated per token prices, since the official price list needs a login. Per place: $0.076 (Edgecombe), $0.176 (Columbia), $0.160 (Ann Arbor).
+Measured on the first analysis of the three demo places, 8 October 2026 (191 agenda items, 29 explained); the live panels add later refreshes. Costs use estimated per token prices, since the official price list needs a login. Per place: $0.076 (Edgecombe), $0.176 (Columbia), $0.160 (Ann Arbor).
 
 What the numbers say:
 
@@ -78,7 +78,7 @@ Tavily is called at run time for every new place (`src/lib/tavily.ts`):
 
 Every place with a published briefing is followed. `npm run pipeline -- refresh` re-reads the agenda listings of every followed place and re-runs the pipeline; because every stage is cached by content, an unchanged agenda costs no model call and only the items of a new agenda are sorted and explained. First real run (9 October 2026): Edgecombe, Ann Arbor and Hood River unchanged at $0; Columbia County had 14 new items, processed with 5 model calls for $0.029.
 
-In production the command runs each night as a **Nebius Serverless AI job** on a CPU VM, started by a GitHub Actions schedule (`.github/workflows/nightly.yml`, image `deploy/Dockerfile.refresh`, keys injected from Nebius MysteryBox at run time). Setup: [deploy/README.md](deploy/README.md).
+In production the command runs each night as a **Nebius Serverless AI job** on a CPU VM, started by a GitHub Actions schedule (`.github/workflows/nightly.yml`, image `deploy/Dockerfile.refresh`, keys injected from Nebius MysteryBox at run time). A run stops at 30 Tavily credits so a month of nights fits the Tavily allowance. Setup: [deploy/README.md](deploy/README.md).
 
 ## Trust rules
 
@@ -107,7 +107,7 @@ Requires Node 24.
 ```bash
 npm install
 cp .env.example .env.local   # then add NEBIUS_API_KEY and TAVILY_API_KEY
-npm test                     # 111 unit and pipeline tests, no network
+npm test                     # 121 unit and pipeline tests, no network
 npm run dev
 ```
 

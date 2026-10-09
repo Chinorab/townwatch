@@ -74,7 +74,7 @@ Every model call runs on **Nebius Token Factory** through its OpenAI-compatible 
 | Explain | **Nemotron 3 Ultra 550B** with reasoning: what is decided, by whom, when, what changes, how to take part. Falls back to **Nemotron 3 Super 120B** on timeout or when Ultra returns no usable JSON. |
 | Ground | Code keeps a sentence only if its quote is found in the source, its numbers appear in the source and it uses no opinion words. |
 
-Measured on the three demo briefings (191 agenda items):
+Measured on the first analysis of the three demo places, 8 October 2026 (191 agenda items):
 
 | Model | Calls | Output tokens (reasoning) | Cost |
 |---|---|---|---|
@@ -84,9 +84,11 @@ Measured on the three demo briefings (191 agenda items):
 
 Nano sorted all 191 items for one cent. Ultra explained 29 of them (15%) and accounts for 97% of the cost. A place costs between $0.08 and $0.18 the first time and nothing after that.
 
+Followed places are refreshed every night by a **Nebius Serverless AI job** on a CPU VM, started by a GitHub Actions schedule: unchanged agendas cost no model call, new ones are sorted and explained. On its first real run, Columbia County had published 14 new items, processed with 5 model calls for 3 cents; the other places cost nothing.
+
 Analyses are persisted jobs advanced one bounded step per request, so nothing runs longer than one stage and two visitors asking for the same place share one job. Every document, triage batch and explanation is cached under a hash of its content in Upstash Redis.
 
-Stack: Next.js 16, React 19, TypeScript, zod, the OpenAI SDK pointed at Token Factory, Upstash Redis, unpdf, MapLibre with OpenFreeMap tiles, the US Census Gazetteer (22,669 places) and the Census geocoder, deployed on Vercel. Built spec first with GitHub Spec Kit (spec, plan, contracts and tasks are in `specs/`), with 111 unit and pipeline tests including an offline replay of a full recorded Edgecombe run.
+Stack: Next.js 16, React 19, TypeScript, zod, the OpenAI SDK pointed at Token Factory, Upstash Redis, unpdf, MapLibre with OpenFreeMap tiles, the US Census Gazetteer (22,669 places) and the Census geocoder, deployed on Vercel. Built spec first with GitHub Spec Kit (spec, plan, contracts and tasks are in `specs/`), with 121 unit and pipeline tests including an offline replay of a full recorded Edgecombe run, and 27 browser tests including an axe WCAG 2.1 AA audit in light and dark mode.
 
 ### Best use of Tavily
 
@@ -122,7 +124,7 @@ Townwatch has no list of agenda URLs. Tavily is how it finds and reads the recor
 ### What's next
 
 - A BoardDocs reader, used by many school districts, so school boards are covered in more places.
-- A nightly refresh of followed places as a Nebius Serverless Job, so a briefing is ready before each meeting.
+- Alerts for a followed place when a new agenda names your street, without storing who you are.
 - More platform readers (Granicus, PrimeGov) to raise the share of news-desert counties covered with zero configuration.
 
 ---
