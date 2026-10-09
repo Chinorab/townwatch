@@ -53,6 +53,19 @@ describe("CivicClerk reader on the real Columbia County, GA API responses", () =
   });
 });
 
+describe("scheduled meetings without a published agenda", () => {
+  it("link to their own portal event page", async () => {
+    const future = { id: 2512, eventName: "Board of Commissioners Meeting", categoryName: null, startDateTime: "2026-10-20T18:00:00Z", agendaId: 3480, eventLocation: null, publishedFiles: [] };
+    const ctx = testContext({
+      now: new Date("2026-10-09T12:00:00Z"),
+      fetcher: async (url) => (/\/Events\?/.test(url) ? ok(Buffer.from(JSON.stringify({ value: [future] }))) : { status: 404, contentType: "text/plain", bytes: new Uint8Array() }),
+    });
+    const [m] = await civicclerkReader.list(ctx, { ...source, url: "https://columbiacoga.portal.civicclerk.com/event/2499/files" }, { from: "2026-09-24", to: "2026-10-29" });
+    expect(m.agendaPublished).toBe(false);
+    expect(m.agendaUrl).toBe("https://columbiacoga.portal.civicclerk.com/event/2512/files");
+  });
+});
+
 describe("civicclerk helpers", () => {
   it("strips HTML and decodes entities", () => {
     expect(stripHtml("<p>Location&nbsp;&ndash; Wrightsboro&nbsp;Rd &amp; Horizon</p>")).toBe("Location – Wrightsboro Rd & Horizon");

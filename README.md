@@ -95,6 +95,7 @@ The reader's address is geocoded in the browser by the US Census geocoder and co
 - **New places:** one per visitor per day, ten per day overall, and analysis stops if recorded model spend reaches 12 USD.
 - **Zero-configuration discovery works on 4 of 11 news-desert counties** sampled from the Medill list (`research/sc004.md`). Each success was checked by hand against the county's real site. The failures are mostly counties that publish no agenda online, publish agendas as news posts, or use content systems whose agenda pages are rendered by JavaScript. A live test on Hood River County, OR found the right sites but could not read a dated agenda from them.
 - **BoardDocs** (used by many school districts) is not read yet, so Ann Arbor's school board falls back to the county intermediate school district.
+- Some county sites refuse visitors from outside the US: from France, the whole Edgecombe County site answers 403, so its citation links only open from a US connection.
 - Token prices are estimates until the official price list is public.
 
 ## Run it locally
@@ -111,7 +112,7 @@ npm run dev
 Without Upstash credentials the app stores everything in `.cache/kv` on disk. Run the pipeline for one place from the command line:
 
 ```bash
-node --env-file=.env.local node_modules/tsx/dist/cli.mjs src/pipeline/cli.ts all --place nc-edgecombe-county
+npm run pipeline -- all --place nc-edgecombe-county
 ```
 
 Running it twice costs nothing the second time. The pipeline test replays a recorded run of Edgecombe County (`tests/fixtures/recorded/`), so the whole chain is tested offline. Browser tests: `npx playwright install chromium` then `npx playwright test`.

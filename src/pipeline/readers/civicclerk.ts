@@ -98,7 +98,8 @@ export const civicclerkReader: Reader = {
       };
       const agendaFile = e.publishedFiles?.find((f) => f.type === "Agenda") ?? e.publishedFiles?.find((f) => /agenda/i.test(f.type));
       if (!agendaFile) {
-        if (date >= today && scheduled.length < 2) scheduled.push({ ...base, agendaUrl: source.url, agendaPublished: false, items: [] });
+        // Link to this meeting's own portal page, not to the page discovery found.
+        if (date >= today && scheduled.length < 2) scheduled.push({ ...base, agendaUrl: `https://${tenant}.portal.civicclerk.com/event/${e.id}/files`, agendaPublished: false, items: [] });
         continue;
       }
       const meeting = await getJson<{ items: CcItem[] }>(ctx, `${api}/Meetings/${e.agendaId}`);

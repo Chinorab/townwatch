@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pipeline": "tsx src/pipeline/cli.ts",
+    "pipeline": "tsx --env-file-if-exists=.env.local src/pipeline/cli.ts",
     "check:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {

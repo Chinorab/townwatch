@@ -10,7 +10,7 @@ const ROLE: Record<BodyRole, RegExp> = {
 };
 
 /** Sub-bodies that share words with the main ones ("Council Policy Agenda Committee"). */
-const NOT_MAIN = /committee|subcommittee|caucus|work(ing)? ?session|study session|authority|advisory|retirement|pension|assessors|election|appeals|youth/i;
+const NOT_MAIN = /committee|subcommittee|caucus|work(ing)? ?session|study session|authority|advisory|retirement|retiree|pension|benefit plan|assessors|election|appeals|youth/i;
 
 export function matchesRole(name: string, role: BodyRole): boolean {
   return ROLE[role].test(name) && !NOT_MAIN.test(name);

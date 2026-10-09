@@ -87,6 +87,7 @@ Format: date, product, what happened, impact, suggestion.
 - CivicClerk's public API pages at 15 events with `@odata.nextLink`; busy counties need many pages.
 - Legistar lists public-comment speakers as numbered agenda items; they must be filtered out.
 - CivicPlus AgendaCenter encodes meeting dates only in file names (`_MMDDYYYY-id`).
+- 2026-10-09: the Edgecombe County, NC site answers 403 to every page from a French connection, in a real browser too, while Tavily Extract read it. Citation links to such sites only work for US visitors; worth saying to international judges.
 
 ## Devpost
 
