@@ -34,6 +34,9 @@ test("the first Tab reaches the skip link, which moves focus to the briefing", a
 
 test("keyboard focus is always visible", async ({ page }) => {
   await page.goto("/nc-edgecombe-county");
+  // The briefing streams in after the page shell: start once it is shown.
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.waitForLoadState("networkidle");
   for (let i = 0; i < 25; i++) {
     await page.keyboard.press("Tab");
     const focus = await page.evaluate(() => {

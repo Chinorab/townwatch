@@ -115,7 +115,7 @@ Without Upstash credentials the app stores everything in `.cache/kv` on disk. Ru
 npm run pipeline -- all --place nc-edgecombe-county
 ```
 
-Running it twice costs nothing the second time. The pipeline test replays a recorded run of Edgecombe County (`tests/fixtures/recorded/`), so the whole chain is tested offline. Browser tests: `npx playwright install chromium` then `npx playwright test`.
+Running it twice costs nothing the second time. The pipeline test replays a recorded run of Edgecombe County (`tests/fixtures/recorded/`), so the whole chain is tested offline. Browser tests (27, including an axe WCAG 2.1 AA audit in light and dark mode, keyboard and mobile checks): `npx playwright install chromium` then `npx playwright test`, or `E2E_BASE_URL=https://townwatch-tau.vercel.app npx playwright test` to run them against production.
 
 Before any deploy, `npm run check:secrets` searches the code and the client bundle for API keys.
 

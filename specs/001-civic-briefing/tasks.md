@@ -85,7 +85,7 @@ document with its item number, item 4.8 is explained neutrally, nothing uncited 
 - [X] T035 [US1] Load design skills (design-taste-frontend, web-design-guidelines, design-md-library, image-to-code), write the editorial design tokens and type scale in src/app/globals.css and docs/design.md
 - [X] T036 [US1] Build the place page: masthead "This week in [Place]", headline items with statements and inline citations (document link, item number, page), "Also on the agenda", disclaimer, last analysed date, in src/app/[placeId]/page.tsx and src/components/briefing/
 - [X] T037 [P] [US1] Build the home page with place search (static list of demo places for now) in src/app/page.tsx
-- [ ] T038 [US1] Playwright check of the place page (citations open the right URL, no uncited statement, disclaimer visible, mobile and desktop screenshots) in tests/e2e/briefing.spec.ts
+- [x] T038 [US1] Playwright check of the place page (citations open the right URL, no uncited statement, disclaimer visible, mobile and desktop screenshots) in tests/e2e/briefing.spec.ts
 
 **Checkpoint**: MVP: Edgecombe briefing end to end (target 18 Oct for the pipeline, UI by 22 Oct).
 
@@ -118,7 +118,7 @@ new place the same day is refused politely.
 - [X] T049 [US2] Implement `GET /api/places?q=` with state disambiguation from a US counties and places list in src/data/ and src/app/api/places/route.ts
 - [X] T050 [US2] Build the progress view (stages, live counts, bodies covered or not with portal links, limit messages) in src/components/progress/ and wire it in src/app/[placeId]/page.tsx
 - [X] T051 [US2] Run real analyses for Ann Arbor MI and Columbia County GA, review briefings by hand, log frictions in FRICTION_LOG.md
-- [ ] T052 [US2] Measure SC-004: run discovery to briefing on 10 counties sampled from data/medill-2025-news-deserts.tsv, record success, time and cost per county in research/sc004.md (respect the budget: stop if average cost > 0.25 USD)
+- [x] T052 [US2] Measure SC-004: run discovery to briefing on 10 counties sampled from data/medill-2025-news-deserts.tsv, record success, time and cost per county in research/sc004.md (respect the budget: stop if average cost > 0.25 USD)
 
 **Checkpoint**: live analysis works; 4 demo places cached.
 
@@ -134,7 +134,7 @@ distance; network inspection shows the address only in the Census JSONP request.
 ### Tests for User Story 3
 
 - [X] T053 [P] [US3] Distance and ranking tests (haversine, outside-area case, no nearby items) in tests/unit/near.test.ts
-- [ ] T054 [P] [US3] Playwright privacy check: enter an address, assert no request to the app origin contains any part of it, in tests/e2e/privacy.spec.ts
+- [x] T054 [P] [US3] Playwright privacy check: enter an address, assert no request to the app origin contains any part of it, in tests/e2e/privacy.spec.ts
 
 ### Implementation for User Story 3
 
@@ -184,8 +184,8 @@ cached views say they cost nothing new.
 
 - [X] T066 [P] Privacy page (address handling, Census geocoder, pin option, visitor counters, no accounts) in src/app/privacy/page.tsx
 - [X] T067 [P] Favicon and app icon (no AI imagery) in src/app/icon.svg
-- [ ] T068 [P] Copy pass on every UI string: no dashes, no emojis, no generic AI copy, no AI mentions, in src/components/ and src/app/
-- [ ] T069 Accessibility and design audit with web-design-guidelines and Playwright (WCAG AA contrast, keyboard, focus, mobile) and fixes, in tests/e2e/a11y.spec.ts
+- [x] T068 [P] Copy pass on every UI string: no dashes, no emojis, no generic AI copy, no AI mentions, in src/components/ and src/app/
+- [x] T069 Accessibility and design audit with web-design-guidelines and Playwright (WCAG AA contrast, keyboard, focus, mobile) and fixes, in tests/e2e/a11y.spec.ts
 - [X] T070 Deploy to Vercel with env vars and Upstash Redis, run `npm run check:secrets` on the build, pre-analyse the demo places in production
 - [x] T071 [P] README: what it does, architecture diagram, how Nemotron and Token Factory are used (routing table with measured numbers), Tavily usage, Nebius tools, setup, tests, limits, in README.md and docs/architecture.svg
 - [x] T072 [P] Devpost text and feedback section drafted from FRICTION_LOG.md in docs/devpost.md
