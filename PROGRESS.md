@@ -108,7 +108,7 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
   Marketplace injects KV_REST_API_URL/TOKEN (code accepts KV_* and UPSTASH_*; values are [SENSITIVE] for
   vercel env pull, user pasted them in .env.local). Cache pushed: 956 entries (scripts/push-cache.ts), 3 demo
   briefings served from Upstash. NOTE: local dev/CLI now also use Upstash because .env.local has KV_*.
-- [ ] USER: add NEBIUS_API_KEY + TAVILY_API_KEY in Vercel env (Production) then redeploy: until then new places fail.
+- [x] NEBIUS_API_KEY + TAVILY_API_KEY added in Vercel (Production) by the user on 2026-10-09; redeployed (vercel redeploy). Live new-place test: Hood River County OR (see below).
 - NEXT after deploy: README + architecture diagram (T071), Devpost text (T072), quickstart on prod (T073), video.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.
@@ -150,3 +150,8 @@ per-city config. Tavily Extract flattens PDFs: no page numbers.
 - From Argus: Nemotron thinking off via `chat_template_kwargs: {enable_thinking:false}`; reasoning in
   `message.reasoning`; Ultra 550B latency 20 to 96 s, one hung call → per-call timeouts + Super fallback.
 - Tavily: search basic = 1 credit, advanced = 2; extract basic = 1 credit / 5 URLs; map 1 credit / 10 pages; `include_usage: true` returns credits.
+
+### 2026-10-09 live new-place test (production keys)
+- Hood River County OR, started from the deployed app: discovery and verification ran on the production NEBIUS/TAVILY keys (4 Nano calls, $0.0008, 30 Tavily credits). Result: no source kept. The county site (hoodrivercounty.gov, `index.asp?SEC=` CMS) and the school district page gave "no dated agendas found". Same failure class as the SC-004 misses; not fixed.
+- Copy fix: when no body is covered, the dek no longer reads "What local bodies is deciding" and the empty state says nothing could be read instead of "every item is listed below".
+- Note: that test used this IP's 1 new place for today (FR-024).

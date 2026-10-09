@@ -84,8 +84,12 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
         </p>
         <h1 className={styles.title}>This week in {b.placeName}</h1>
         <p className={styles.dek}>
-          What {new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(covered.map((c) => `the ${c.name.replace(new RegExp(`^${b.placeName}\\s+`, "i"), "")}`)) || "local bodies"}{" "}
-          {covered.length > 1 ? "are deciding, explained from their official agendas." : "is deciding, explained from its official agendas."}
+          {covered.length === 0
+            ? "No official agenda for this place could be read online yet."
+            : <>
+                What {new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(covered.map((c) => `the ${c.name.replace(new RegExp(`^${b.placeName}\\s+`, "i"), "")}`))}{" "}
+                {covered.length > 1 ? "are deciding, explained from their official agendas." : "is deciding, explained from its official agendas."}
+              </>}
         </p>
         <p className={styles.notice}>
           <Info aria-hidden size={20} weight="regular" className={styles.icon} />
@@ -108,7 +112,9 @@ async function BriefingView({ params, searchParams }: { params: Promise<{ placeI
         </div>
       ) : (
         <p className={styles.empty}>
-          {topic
+          {b.headlineItems.length === 0 && b.alsoOnAgenda.length === 0 && !topic
+            ? "There is nothing to summarise yet. The pages searched, and why each one was set aside, are listed under How this was made."
+            : topic
             ? "No explained decision on this topic. Items on this topic, if any, are listed below as written."
             : "No decision needing explanation was found on the agendas currently online. Every item is listed below as written."}
         </p>
