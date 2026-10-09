@@ -20,8 +20,8 @@ image has been run as a Nebius Serverless AI job started from the console:
    `KV_REST_API_URL`, `KV_REST_API_TOKEN` (the production values), variable
    `REFRESH_RUNNER=github`.
 2. Actions, Nightly refresh, Run workflow: builds and publishes
-   `ghcr.io/chinorab/townwatch-refresh:latest`, then runs the refresh. Make the package public
-   once (Packages, townwatch-refresh, Package settings, Change visibility).
+   `ghcr.io/chinorab/townwatch-refresh:latest` (public, like the repository: anyone can pull it),
+   then runs the refresh. First run, 9 October 2026: 4 places, unchanged, $0, 25 s.
 3. Nebius console, Create resource, Job: image `ghcr.io/chinorab/townwatch-refresh:latest`,
    no GPU (CPU platform, `2vcpu-8gb`), timeout 1 hour, four secret environment variables with
    the names above (Create secret in the job form), Create job. The job log ends with
