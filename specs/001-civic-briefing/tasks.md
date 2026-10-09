@@ -186,7 +186,7 @@ cached views say they cost nothing new.
 - [X] T067 [P] Favicon and app icon (no AI imagery) in src/app/icon.svg
 - [ ] T068 [P] Copy pass on every UI string: no dashes, no emojis, no generic AI copy, no AI mentions, in src/components/ and src/app/
 - [ ] T069 Accessibility and design audit with web-design-guidelines and Playwright (WCAG AA contrast, keyboard, focus, mobile) and fixes, in tests/e2e/a11y.spec.ts
-- [ ] T070 Deploy to Vercel with env vars and Upstash Redis, run `npm run check:secrets` on the build, pre-analyse the demo places in production
+- [X] T070 Deploy to Vercel with env vars and Upstash Redis, run `npm run check:secrets` on the build, pre-analyse the demo places in production
 - [ ] T071 [P] README: what it does, architecture diagram, how Nemotron and Token Factory are used (routing table with measured numbers), Tavily usage, Nebius tools, setup, tests, limits, in README.md and docs/architecture.svg
 - [ ] T072 [P] Devpost text and feedback section drafted from FRICTION_LOG.md in docs/devpost.md
 - [ ] T073 Run quickstart.md end to end on production and fix any gap

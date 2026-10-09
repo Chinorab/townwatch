@@ -104,8 +104,11 @@ Follow specs/001-civic-briefing/tasks.md in order; tick tasks there AND note mil
 - [x] Vercel project `townwatch` (scope anas02-projects, prj_8P7WmTlu88dpvOOjPz3ltKAtMSUk) linked to the repo
   via Vercel CLI (the Vercel MCP connector has no access to that scope: 403). `vercel link` adds
   VERCEL_OIDC_TOKEN to .env.local and `.env*` to .gitignore: revert the .gitignore change (it would hide .env.example).
-- [ ] USER: Upstash Redis via Vercel Storage + NEBIUS_API_KEY / TAVILY_API_KEY in Vercel env vars, then copy
-  UPSTASH_REDIS_REST_URL/TOKEN into .env.local → I run `scripts/push-cache.ts` (929 entries) → deploy prod.
+- [x] 2026-10-09 DEPLOYED: https://townwatch-tau.vercel.app (auto-deploy on push to master). Upstash Redis via Vercel
+  Marketplace injects KV_REST_API_URL/TOKEN (code accepts KV_* and UPSTASH_*; values are [SENSITIVE] for
+  vercel env pull, user pasted them in .env.local). Cache pushed: 956 entries (scripts/push-cache.ts), 3 demo
+  briefings served from Upstash. NOTE: local dev/CLI now also use Upstash because .env.local has KV_*.
+- [ ] USER: add NEBIUS_API_KEY + TAVILY_API_KEY in Vercel env (Production) then redeploy: until then new places fail.
 - NEXT after deploy: README + architecture diagram (T071), Devpost text (T072), quickstart on prod (T073), video.
 - Known gaps: school boards on BoardDocs not readable (v1 scope); Nano sometimes rejects BoardDocs as
   "external"; Columbia GA school board (ccboe.net) not discovered.

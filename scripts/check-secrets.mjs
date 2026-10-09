@@ -10,8 +10,8 @@ const PATTERNS = [/tvly-[A-Za-z0-9_-]{16,}/, /eyJ[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_
 const secrets = [];
 if (existsSync(".env.local")) {
   for (const line of readFileSync(".env.local", "utf8").split(/\r?\n/)) {
-    const m = line.match(/^(NEBIUS_API_KEY|TAVILY_API_KEY|UPSTASH_REDIS_REST_TOKEN|CRON_SECRET)=(.{12,})$/);
-    if (m) secrets.push({ name: m[1], value: m[2].trim() });
+    const m = line.match(/^(NEBIUS_API_KEY|TAVILY_API_KEY|UPSTASH_REDIS_REST_TOKEN|KV_REST_API_TOKEN|KV_REST_API_URL|VERCEL_OIDC_TOKEN|CRON_SECRET)=(.{12,})$/);
+    if (m) secrets.push({ name: m[1], value: m[2].trim().replace(/^"(.*)"$/, "$1") });
   }
 }
 
