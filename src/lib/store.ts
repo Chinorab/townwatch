@@ -142,9 +142,17 @@ export async function redisKV(url: string, token: string): Promise<KV> {
 /** Upstash credentials under either naming: UPSTASH_REDIS_REST_* (Upstash console) or KV_REST_API_*
  *  (what the Vercel Marketplace integration injects into the project). */
 export function redisCredentials(env: NodeJS.ProcessEnv = process.env): { url: string; token: string } | null {
-  const url = env.UPSTASH_REDIS_REST_URL || env.KV_REST_API_URL;
-  const token = env.UPSTASH_REDIS_REST_TOKEN || env.KV_REST_API_TOKEN;
-  return url && token ? { url, token } : null;
+  // Values pasted into CI secret forms often keep their quotes or a trailing space.
+  const clean = (v?: string) => v?.trim().replace(/^(["'])(.*)\1$/, "$2").trim();
+  const url = clean(env.UPSTASH_REDIS_REST_URL || env.KV_REST_API_URL);
+  const token = clean(env.UPSTASH_REDIS_REST_TOKEN || env.KV_REST_API_TOKEN);
+  if (!url || !token) return null;
+  if (!/^https:\/\//.test(url)) {
+    // Say what kind of value it is without printing it.
+    const kind = /^rediss?:\/\//.test(url) ? "a redis:// connection string (KV_URL), not the REST URL" : /^https?:/.test(url) ? "an http:// URL" : "not a URL";
+    throw new Error(`The Upstash REST URL (KV_REST_API_URL) is ${kind}. Use the value that starts with https://.`);
+  }
+  return { url, token };
 }
 
 export async function kvFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<KV> {
