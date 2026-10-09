@@ -227,7 +227,7 @@ reprocessed.
   is expected or it is information only, impact on residents, locations mentioned, importance.
 - **FR-010**: Only items classified as important MUST be passed to the reasoning model, which
   writes: what is decided, by whom, when, what changes concretely, how to take part.
-- **FR-011**: The routing rule MUST be explicit, recorded per item with its reason, and
+- **FR-011**: The routing rule MUST be explicit, recorded per item with its reason, and Items of one meeting that differ only by numbers or a parcel label count as one decision: the first is explained, the others are listed as written (reason "series") and do not use the cap.
   testable. Step 1: routine items never escalate (approval of minutes, proclamations,
   recognitions, appointments, roll call, consent agenda items not pulled for discussion).
   Step 2: a remaining item escalates when a decision is expected AND (its resident impact is

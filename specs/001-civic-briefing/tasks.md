@@ -174,7 +174,7 @@ cached views say they cost nothing new.
 **Goal**: nightly refresh via a Nebius Serverless Job. Start only if Phases 1 to 7 are done by
 25 Oct; otherwise document as next step in the README.
 
-- [ ] T063 [US6] Implement `GET /api/cron/refresh` logic as a CLI command `npm run pipeline -- refresh` (new or changed documents only, no model call when nothing changed) in src/pipeline/refresh.ts
+- [x] T063 [US6] Implement `GET /api/cron/refresh` logic as a CLI command `npm run pipeline -- refresh` (new or changed documents only, no model call when nothing changed) in src/pipeline/refresh.ts
 - [ ] T064 [US6] Write deploy/Dockerfile.refresh for the pipeline CLI and push the image to Nebius Container Registry
 - [ ] T065 [US6] Write deploy/nightly.yml (GitHub Actions schedule running `nebius ai job create --image ... --env-secret ...` on a CPU preset) and test one run, log frictions in FRICTION_LOG.md
 

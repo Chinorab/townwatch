@@ -7,6 +7,7 @@ import { lookupPlace } from "@/lib/place-index";
 import { findSources, readSources } from "./run";
 import { analysePlace } from "./jobs";
 import "./readers/register";
+import { refreshAll } from "./refresh";
 import { Recorder } from "./recording";
 
 function arg(name: string): string | undefined {
@@ -17,10 +18,23 @@ function arg(name: string): string | undefined {
 async function main() {
   const stage = process.argv[2];
   const placeId = arg("place");
-  if (!stage || !placeId) {
+  if (!stage || (!placeId && stage !== "refresh")) {
     console.error('Usage: npm run pipeline -- <discover|read|all> --place nc-edgecombe-county [--county "Washtenaw County"]');
+    console.error("       npm run pipeline -- refresh [--place nc-edgecombe-county]   (every followed place by default)");
     process.exit(1);
   }
+  if (stage === "refresh") {
+    const ctx = await createContext({ log: (m) => console.log("  ·", m) });
+    const t0 = Date.now();
+    const results = await refreshAll(ctx, placeId ? [placeId] : undefined, (r) =>
+      console.log(`${r.placeId}: ${r.status}, ${r.newItems} new items, ${r.modelCalls} model calls, ~$${r.costUsd.toFixed(4)}, ${r.tavilyCredits} Tavily credits${r.detail ? ` (${r.detail})` : ""}`),
+    );
+    const cost = results.reduce((s, r) => s + r.costUsd, 0);
+    console.log(`Refreshed ${results.length} places, ~$${cost.toFixed(4)} (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+    if (results.length > 0 && results.every((r) => r.status === "failed")) process.exit(1);
+    return;
+  }
+  if (!placeId) return;
   // --record <file>: save every external response so the run can be replayed offline in tests
   // (tests/pipeline). Only responses not already cached are recorded: empty the cache first.
   const recordFile = arg("record");

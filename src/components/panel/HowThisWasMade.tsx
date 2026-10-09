@@ -12,6 +12,7 @@ const REASON: Record<string, string> = {
   info_only: "information only, no decision",
   low_impact: "decisions with little effect on residents",
   cap: "important, beyond the explanation limit",
+  series: "the same decision as an explained item, for another parcel or number",
   untriaged: "not sorted",
 };
 
@@ -30,8 +31,8 @@ export function HowThisWasMade({ b }: { b: Briefing }) {
         How this was made
       </h2>
       <p className={styles.dek}>
-        Analysed on {longDate(b.generatedAt)}. Every figure below was recorded during that work. Reading this page costs nothing more: it is served
-        from the stored briefing.
+        Last updated on {longDate(b.generatedAt)}. The figures below count every search and model call made for this place since it was first
+        read, nightly checks included. Reading this page costs nothing more: it is served from the stored briefing.
       </p>
 
       <ol className={styles.flow}>

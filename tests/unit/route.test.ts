@@ -77,3 +77,25 @@ describe("route (FR-011)", () => {
 function fill(n: number): AgendaItem[] {
   return Array.from({ length: n }, (_, i) => item(`filler-${i}`, { routine: true }));
 }
+
+describe("series of the same decision", () => {
+  const tract = (n: number) => ({ ...item(`t${n}`, { impact: "medium", topic: "roads_transport" }), title: `Resolution 26-${19 + n} Concerning a Determination to Abandon and Sell a Portion of Crawford Place Lane Labeled Tract ${n}` });
+
+  it("explains the first item of a series and lists the others without using the cap", () => {
+    const r = reasons([tract(1), tract(2), tract(3), ...fill(9)]);
+    expect([r.t1, r.t2, r.t3]).toEqual(["rule_match", "series", "series"]);
+  });
+
+  it("keeps distinct decisions apart", () => {
+    const a = { ...item("a", { impact: "medium" }), title: "Contract with Peek Pavement Marking for striping" };
+    const b = { ...item("b", { impact: "medium" }), title: "Contract with Blythe Construction for resurfacing" };
+    const r = reasons([a, b, ...fill(6)]);
+    expect([r.a, r.b]).toEqual(["rule_match", "rule_match"]);
+  });
+
+  it("does not group items from different meetings", () => {
+    const other = { ...tract(2), meetingId: "m2" };
+    expect(reasons([tract(1), other, ...fill(6)]).t2).toBe("rule_match");
+  });
+});
+

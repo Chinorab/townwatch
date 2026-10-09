@@ -36,7 +36,7 @@ These three load from the stored briefing, at no cost. Any other US county or to
 | 3. Read | Legistar and CivicClerk public APIs, Tavily Map and Extract, unpdf | JavaScript portals are read through platform readers written once per platform. Other sites go through Tavily Map (one hop, with instructions) and Extract. PDFs are read page by page so citations carry page numbers; Extract is the fallback when a site blocks direct downloads. |
 | 4. Split | Code | Agenda text is cut into items numbered exactly as in the document (4.8, 8.1.2, VI.A...). |
 | 5. Triage | Nemotron 3 Nano 30B | Every item, 10 per request, thinking off: topic, decision or information, impact on residents, places named. |
-| 6. Route | Code | Routine items never escalate. Decisions with medium or high impact, or on a topic the reader chose, do. At most 25% of items and 12 per place. |
+| 6. Route | Code | Routine items never escalate. Decisions with medium or high impact, or on a topic the reader chose, do. At most 25% of items and 12 per place. When one meeting repeats the same decision for several parcels (Tract 1, 2, 3), only the first is explained. |
 | 7. Explain | Nemotron 3 Ultra 550B, fallback Super 120B | What is decided, by whom, when, what changes, how to take part. Each statement carries a short quote from the item. |
 | 8. Ground | Code | A statement is kept only if its quote is found in the source text, every number in it appears in the source, and it uses no opinion words. Otherwise it is dropped and counted in the panel. |
 | 9. Assemble | Code, Nominatim | Stories, the rest of the agenda as written, calendar, cost panel. Places named in items are geocoded for Near you. |
@@ -74,9 +74,9 @@ Tavily is called at run time for every new place (`src/lib/tavily.ts`):
 - **Extract** reads HTML agenda listings and agenda pages, and fetches PDFs from sites that refuse direct downloads.
 - Credits are counted with `include_usage` and shown in each place's panel: 7, 9 and 10 credits for the three demo places.
 
-## Nebius
+## Nightly refresh
 
-Every inference call runs on Nebius Token Factory. A nightly refresh of followed places as a Nebius Serverless Job is specified (user story 6 in the spec) but not built yet.
+Every place with a published briefing is followed. `npm run pipeline -- refresh` re-reads the agenda listings of every followed place and re-runs the pipeline; because every stage is cached by content, an unchanged agenda costs no model call and only the items of a new agenda are sorted and explained. First real run (9 October 2026): Edgecombe, Ann Arbor and Hood River unchanged at $0; Columbia County had 14 new items, processed with 5 model calls for $0.029.
 
 ## Trust rules
 

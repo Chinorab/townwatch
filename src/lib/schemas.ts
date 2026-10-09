@@ -117,7 +117,7 @@ export const Triage = z.object({
 });
 export type Triage = z.infer<typeof Triage>;
 
-export const RoutingReason = z.enum(["routine", "info_only", "low_impact", "rule_match", "cap"]);
+export const RoutingReason = z.enum(["routine", "info_only", "low_impact", "rule_match", "cap", "series"]);
 export const Routing = z.object({ escalate: z.boolean(), reason: RoutingReason });
 export type Routing = z.infer<typeof Routing>;
 

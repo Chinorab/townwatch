@@ -16,6 +16,7 @@ import { assemble, totalsOf } from "./stages/assemble";
 import { locateItems } from "./stages/locate";
 import { lookupPlace } from "@/lib/place-index";
 import { windowFor } from "./readers/types";
+import { follow } from "./followed";
 import type { ExplanationDraft } from "@/lib/schemas";
 
 export const EXPLAIN_PER_STEP = 4;
@@ -167,6 +168,7 @@ async function step(ctx: Ctx, a: Analysis): Promise<void> {
       });
       await ctx.kv.set(`briefing:${place.placeId}`, briefing);
       await ctx.kv.set(`place:${place.placeId}`, { ...place, bodies: found.bodies, lastAnalysisId: id, followed: true });
+      await follow(ctx.kv, place.placeId);
       await ctx.kv.del(`running:${place.placeId}`);
       a.totals = totalsOf(calls, credits);
       a.finishedAt = ctx.now.toISOString();

@@ -8,6 +8,8 @@ import { Tavily } from "@/lib/tavily";
 import { placeFromId } from "@/lib/places";
 import { replay, type Tape } from "@/pipeline/recording";
 import { analysePlace } from "@/pipeline/jobs";
+import { refreshAll } from "@/pipeline/refresh";
+import { followedPlaces } from "@/pipeline/followed";
 import type { Ctx } from "@/pipeline/context";
 import { NOT_STATED, type Briefing } from "@/lib/schemas";
 
@@ -115,5 +117,41 @@ describe("Edgecombe County briefing replayed from the real run", () => {
     expect(again.newTavilyCredits).toBe(0);
     expect(((await kv.get<unknown[]>("calls:nc-edgecombe-county")) ?? []).length).toBe(before);
     expect(again.briefing.headlineItems.map((h) => h.item.number)).toEqual(briefing.headlineItems.map((h) => h.item.number));
+  });
+
+  it("follows the place once its briefing is published (US6)", async () => {
+    expect(await followedPlaces(kv)).toEqual(["nc-edgecombe-county"]);
+  });
+
+  it("nightly refresh with nothing new: no model call, briefing unchanged (US6 scenario 1)", async () => {
+    const r = replay({ models: {}, tavily: {}, fetch: {} }); // any request would throw
+    const ctx: Ctx = {
+      kv,
+      models: new Models(r.transport, { fast: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", explain: "nvidia/Nemotron-3-Ultra-550b-a55b", fallback: "nvidia/nemotron-3-super-120b-a12b", timeoutMs: {} }),
+      tavily: new Tavily(r.post),
+      fetcher: r.fetcher,
+      now: new Date(tape.now!),
+      log: () => {},
+    };
+    const [res] = await refreshAll(ctx);
+    expect(res).toMatchObject({ placeId: "nc-edgecombe-county", status: "unchanged", newItems: 0, modelCalls: 0, tavilyCredits: 0 });
+  });
+
+  it("reports items that were not in the previous briefing as new (US6 scenario 2)", async () => {
+    const stored = (await kv.get<Briefing>("briefing:nc-edgecombe-county"))!;
+    await kv.set("briefing:nc-edgecombe-county", { ...stored, alsoOnAgenda: stored.alsoOnAgenda.slice(3) });
+    const r = replay({ models: {}, tavily: {}, fetch: {} });
+    const ctx: Ctx = {
+      kv,
+      models: new Models(r.transport, { fast: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", explain: "nvidia/Nemotron-3-Ultra-550b-a55b", fallback: "nvidia/nemotron-3-super-120b-a12b", timeoutMs: {} }),
+      tavily: new Tavily(r.post),
+      fetcher: r.fetcher,
+      now: new Date(tape.now!),
+      log: () => {},
+    };
+    const [res] = await refreshAll(ctx);
+    expect(res.status).toBe("updated");
+    expect(res.newItems).toBe(3);
+    expect(res.modelCalls).toBe(0); // those items were already sorted: cached by content
   });
 });
