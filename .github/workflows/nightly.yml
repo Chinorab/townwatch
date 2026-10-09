@@ -1,7 +1,7 @@
 # Nightly refresh of every followed place (US6, FR-026).
-# Default: build the pipeline image, then run it as a Nebius Serverless AI job on a CPU VM.
-# Fallback: set the repository variable REFRESH_RUNNER=github to run the same command here.
-# Setup and secrets: deploy/README.md. Nothing runs until those secrets exist.
+# REFRESH_RUNNER=github (current): the refresh runs on this runner each night, and a manual run
+# also publishes the image that a Nebius Serverless AI job can start (deploy/README.md).
+# Otherwise, with a Nebius service account configured, each night starts the image as a Nebius job.
 name: Nightly refresh
 
 on:
@@ -19,14 +19,17 @@ concurrency:
 
 jobs:
   image:
-    if: vars.REFRESH_RUNNER != 'github' && vars.NEBIUS_PROJECT_ID != ''
+    if: github.event_name == 'workflow_dispatch' || (vars.REFRESH_RUNNER != 'github' && vars.NEBIUS_PROJECT_ID != '')
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.name.outputs.image }}
     steps:
       - uses: actions/checkout@v4
       - id: name
-        run: echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/townwatch-refresh:${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+        run: |
+          base="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/townwatch-refresh"
+          echo "image=$base:${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+          echo "latest=$base:latest" >> "$GITHUB_OUTPUT"
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -37,10 +40,13 @@ jobs:
           context: .
           file: deploy/Dockerfile.refresh
           push: true
-          tags: ${{ steps.name.outputs.image }}
+          tags: |
+            ${{ steps.name.outputs.image }}
+            ${{ steps.name.outputs.latest }}
 
   nebius:
     needs: image
+    if: vars.REFRESH_RUNNER != 'github' && vars.NEBIUS_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:
       - name: Install the Nebius AI Cloud CLI

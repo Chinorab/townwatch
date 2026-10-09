@@ -9,6 +9,26 @@ in Upstash are updated in place. The VM is billed only while the job runs.
 Nothing runs until the setup below is done: the workflow skips itself while
 `NEBIUS_PROJECT_ID` is not set.
 
+## Current setup (October 2026)
+
+The hackathon tenant does not let us attach a key to a service account (`permission_denied`
+without the tenant admin role), so GitHub cannot start Nebius jobs by itself. The nightly
+refresh therefore runs on the GitHub Actions runner (`REFRESH_RUNNER=github`), and the same
+image has been run as a Nebius Serverless AI job started from the console:
+
+1. GitHub, Settings, Secrets and variables, Actions: secrets `NEBIUS_API_KEY`, `TAVILY_API_KEY`,
+   `KV_REST_API_URL`, `KV_REST_API_TOKEN` (the production values), variable
+   `REFRESH_RUNNER=github`.
+2. Actions, Nightly refresh, Run workflow: builds and publishes
+   `ghcr.io/chinorab/townwatch-refresh:latest`, then runs the refresh. Make the package public
+   once (Packages, townwatch-refresh, Package settings, Change visibility).
+3. Nebius console, Create resource, Job: image `ghcr.io/chinorab/townwatch-refresh:latest`,
+   no GPU (CPU platform, `2vcpu-8gb`), timeout 1 hour, four secret environment variables with
+   the names above (Create secret in the job form), Create job. The job log ends with
+   `Refreshed N places`.
+
+## Fully automatic setup (needs a tenant admin)
+
 ## One-time setup
 
 1. **Service account** (web console only, no Nebius CLI needed, it does not exist for Windows):
