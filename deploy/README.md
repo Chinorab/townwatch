@@ -11,13 +11,19 @@ Nothing runs until the setup below is done: the workflow skips itself while
 
 ## One-time setup
 
-1. **Service account.** In the Nebius console, create a service account (for example
-   `townwatch-ci`) and add it to a group with the `editor` role in the project. Then, on a
-   machine where the Nebius CLI is logged in:
+1. **Service account** (web console only, no Nebius CLI needed, it does not exist for Windows):
+   - Create resource, Service account, name `townwatch-ci`, in the project of the Token Factory key.
+   - Administration, IAM, Groups, `editors`, Add members: add `townwatch-ci`.
+   - Create a key pair outside the repository (Git Bash has openssl):
 
-   ```bash
-   nebius iam auth-public-key generate --service-account-id <SA_ID> --output sa-credentials.json --expires-at 2027-01-31T23:59:59Z
-   ```
+     ```bash
+     mkdir -p ~/townwatch-keys && cd ~/townwatch-keys
+     openssl genrsa -out private.pem 4096
+     openssl rsa -in private.pem -pubout -out public.pem
+     ```
+
+   - On the service account page, Authorized keys, upload `public.pem` (set an expiry, for example
+     31 January 2027), then copy the key ID and the service account ID.
 
 2. **Secrets for the job (MysteryBox).** Create four secrets in the project, each with one
    payload key named like the environment variable:
@@ -30,8 +36,8 @@ Nothing runs until the setup below is done: the workflow skips itself while
    | `townwatch-kv-token` | `KV_REST_API_TOKEN` |
 
 3. **GitHub repository settings** (Settings, Secrets and variables, Actions):
-   - secret `NEBIUS_SA_CREDENTIALS`: the content of `sa-credentials.json` (then delete the file);
-   - variables `NEBIUS_SA_ID` and `NEBIUS_PROJECT_ID`.
+   - secret `NEBIUS_SA_PRIVATE_KEY`: the whole content of `private.pem` (then delete the file);
+   - variables `NEBIUS_SA_ID`, `NEBIUS_PUBLIC_KEY_ID` and `NEBIUS_PROJECT_ID`.
 
 4. **Image visibility.** After the first run, open the `townwatch-refresh` package on GitHub
    and make it public (it contains the open-source code only, no key), so the job can pull it

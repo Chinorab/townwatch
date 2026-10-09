@@ -49,14 +49,15 @@ jobs:
           echo "$HOME/.nebius/bin" >> "$GITHUB_PATH"
       - name: Authenticate as the service account
         env:
-          NEBIUS_CREDENTIALS: ${{ secrets.NEBIUS_SA_CREDENTIALS }}
+          PRIVATE_KEY: ${{ secrets.NEBIUS_SA_PRIVATE_KEY }}
           SA_ID: ${{ vars.NEBIUS_SA_ID }}
+          PUBLIC_KEY_ID: ${{ vars.NEBIUS_PUBLIC_KEY_ID }}
           PROJECT_ID: ${{ vars.NEBIUS_PROJECT_ID }}
         run: |
           mkdir -p ~/.nebius
-          printf '%s' "$NEBIUS_CREDENTIALS" > ~/.nebius/sa-credentials.json
-          chmod 600 ~/.nebius/sa-credentials.json
-          nebius profile create --endpoint api.nebius.cloud --service-account-file ~/.nebius/sa-credentials.json --parent-id "$PROJECT_ID" --profile townwatch
+          printf '%s\n' "$PRIVATE_KEY" > ~/.nebius/sa-private.pem
+          chmod 600 ~/.nebius/sa-private.pem
+          nebius profile create --endpoint api.nebius.cloud --service-account-id "$SA_ID" --public-key-id "$PUBLIC_KEY_ID" --private-key-file ~/.nebius/sa-private.pem --parent-id "$PROJECT_ID" --profile townwatch
       - name: Run the refresh as a Serverless AI job
         run: |
           nebius ai job create \
