@@ -22,7 +22,7 @@ What your county is deciding, sourced line by line.
 - Live demo: https://townwatch-tau.vercel.app (open Edgecombe County, NC for the full briefing; any US county or town can be analysed from the home page)
 - Repository (MIT): https://github.com/Chinorab/townwatch
 - Architecture diagram: `docs/architecture.png` (upload as a gallery image)
-- Video: to add after recording (28 Oct)
+- Video (2:18): https://youtu.be/TUu5bCDqtb4
 
 ## Built with (tags)
 

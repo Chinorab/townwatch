@@ -2,7 +2,7 @@
 
 **What your county, town and school board are deciding, explained in plain English from their own agendas.**
 
-Live: **https://townwatch-tau.vercel.app**
+Live: **https://townwatch-tau.vercel.app** · Demo video (2:18): https://youtu.be/TUu5bCDqtb4
 
 Medill's State of Local News 2025 data lists 213 US counties with no local news source at all. In those places, nobody reads the county commission agenda for residents. The agendas are public, but they are long PDFs scattered across county sites, school district portals and agenda platforms.
 

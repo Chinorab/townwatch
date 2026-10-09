@@ -190,7 +190,7 @@ cached views say they cost nothing new.
 - [x] T071 [P] README: what it does, architecture diagram, how Nemotron and Token Factory are used (routing table with measured numbers), Tavily usage, Nebius tools, setup, tests, limits, in README.md and docs/architecture.svg
 - [x] T072 [P] Devpost text and feedback section drafted from FRICTION_LOG.md in docs/devpost.md
 - [x] T073 Run quickstart.md end to end on production and fix any gap
-- [ ] T074 Make the GitHub repo public with MIT visible in the About section; record the video (under 3 min) and publish on YouTube
+- [x] T074 Make the GitHub repo public with MIT visible in the About section; record the video (under 3 min) and publish on YouTube
 
 ---
 
