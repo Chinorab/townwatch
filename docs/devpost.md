@@ -88,7 +88,7 @@ Followed places are refreshed every night: unchanged agendas cost no model call,
 
 Analyses are persisted jobs advanced one bounded step per request, so nothing runs longer than one stage and two visitors asking for the same place share one job. Every document, triage batch and explanation is cached under a hash of its content in Upstash Redis.
 
-Stack: Next.js 16, React 19, TypeScript, zod, the OpenAI SDK pointed at Token Factory, Upstash Redis, unpdf, MapLibre with OpenFreeMap tiles, the US Census Gazetteer (22,669 places) and the Census geocoder, deployed on Vercel. Built spec first with GitHub Spec Kit (spec, plan, contracts and tasks are in `specs/`), with 121 unit and pipeline tests including an offline replay of a full recorded Edgecombe run, and 27 browser tests including an axe WCAG 2.1 AA audit in light and dark mode.
+Stack: Next.js 16, React 19, TypeScript, zod, the OpenAI SDK pointed at Token Factory, Upstash Redis, unpdf, MapLibre with OpenFreeMap tiles, the US Census Gazetteer (22,669 places) and the Census geocoder, deployed on Vercel. Built spec first with GitHub Spec Kit (spec, plan, contracts and tasks are in `specs/`), with 129 unit and pipeline tests including an offline replay of a full recorded Edgecombe run, and 27 browser tests including an axe WCAG 2.1 AA audit in light and dark mode.
 
 ### Best use of Tavily
 
@@ -113,6 +113,7 @@ Townwatch has no list of agenda URLs. Tavily is how it finds and reads the recor
 - The grounding check works: across the three demo places it removed 6 sentences the model could not support with the source text, and the panel says so.
 - One cent to read and sort 191 agenda items. The expensive model only sees what deserves it.
 - The reader's address never reaches the server: geocoding and distance ranking happen in the browser.
+- Porter County, Indiana (175,000 people, the largest county on the Medill news-desert list) read live in the demo video: 11 items sorted, 3 explained, for 3 cents.
 - Limits stated as measured, not as hoped: 4 of 11 news-desert counties found with zero configuration.
 
 ### What we learned
@@ -145,6 +146,7 @@ Full log with dates: https://github.com/Chinorab/townwatch/blob/master/FRICTION_
 - Model ids use four casing conventions for four models (`NVIDIA-Nemotron-3-Nano-30B-A3B`, `Nemotron-3_5-Lightning`, `nemotron-3-super-120b-a12b`, `Nemotron-3-Ultra-550b-a55b`), and the `usage` object differs between models (Nano returns no `completion_tokens_details`).
 - Ultra reasons by default and reasoning is billed as output: a 76-token prompt produced 685 reasoning tokens for 14 visible ones. Ultra can also spend the whole `max_tokens` on reasoning and return no answer.
 - Nano is not fully deterministic at temperature 0 (10 then 15 escalations on the same 70 items); caching by item hash was needed for stable results.
+- Serverless AI jobs have no scheduler, default to a GPU platform and a 250 GiB disk, and a non-admin on a hackathon tenant cannot create a service account key, so CI cannot start them (the Nebius CLI also has no Windows build). Secrets created outside the job form are not attached to the job, and a hyphen in a variable name returns a raw regex error.
 - Tavily Extract returns a PDF as a single line with no page breaks, which makes page citations impossible from Extract alone. JavaScript agenda portals (CivicClerk, BoardDocs) extract empty.
 
 **Suggestions**
@@ -152,4 +154,5 @@ Full log with dates: https://github.com/Chinorab/townwatch/blob/master/FRICTION_
 - A public, machine-readable price and model list with ids exactly as the API expects them.
 - A per-request reasoning budget for Ultra, so cost and latency can be capped without turning reasoning off.
 - A guide comparing Nano and Lightning for classification in a cascade.
+- A schedule option and a CPU default for Serverless AI jobs.
 - A Tavily Extract option that keeps PDF page boundaries.
