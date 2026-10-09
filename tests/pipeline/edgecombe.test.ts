@@ -154,4 +154,19 @@ describe("Edgecombe County briefing replayed from the real run", () => {
     expect(res.newItems).toBe(3);
     expect(res.modelCalls).toBe(0); // those items were already sorted: cached by content
   });
+
+  it("stops a nightly run once its Tavily allowance is used", async () => {
+    const r = replay({ models: {}, tavily: {}, fetch: {} });
+    const ctx: Ctx = {
+      kv,
+      models: new Models(r.transport, { fast: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B", explain: "nvidia/Nemotron-3-Ultra-550b-a55b", fallback: "nvidia/nemotron-3-super-120b-a12b", timeoutMs: {} }),
+      tavily: new Tavily(r.post),
+      fetcher: r.fetcher,
+      now: new Date(tape.now!),
+      log: () => {},
+    };
+    const [res] = await refreshAll(ctx, undefined, () => {}, 0);
+    expect(res).toMatchObject({ status: "skipped", detail: "nightly Tavily allowance used" });
+  });
 });
+

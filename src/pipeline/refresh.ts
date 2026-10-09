@@ -50,13 +50,31 @@ export async function refreshPlace(ctx: Ctx, placeId: string): Promise<RefreshRe
   }
 }
 
-/** Refreshes every followed place in turn, stopping at the project's spend limit. */
-export async function refreshAll(ctx: Ctx, placeIds?: string[], onResult: (r: RefreshResult) => void = () => {}): Promise<RefreshResult[]> {
+/** Tavily credits one nightly run may use. Re-reading the agenda listing of a generic county
+ *  site costs a few credits (7 for Edgecombe), API platforms cost none: the cap keeps a month of
+ *  nights inside the Tavily allowance. */
+export const NIGHTLY_TAVILY_CREDITS = 30;
+
+/** Refreshes every followed place in turn, stopping at the project's spend limit or the nightly
+ *  Tavily allowance. */
+export async function refreshAll(
+  ctx: Ctx,
+  placeIds?: string[],
+  onResult: (r: RefreshResult) => void = () => {},
+  maxTavilyCredits = NIGHTLY_TAVILY_CREDITS,
+): Promise<RefreshResult[]> {
   const ids = placeIds?.length ? placeIds : await followedPlaces(ctx.kv);
   const out: RefreshResult[] = [];
+  const credits0 = ctx.tavily.credits;
   for (const id of ids) {
-    if (((await ctx.kv.get<number>("ledger:total")) ?? 0) >= BUDGET_STOP_USD) {
-      const r: RefreshResult = { placeId: id, status: "skipped", newItems: 0, modelCalls: 0, costUsd: 0, tavilyCredits: 0, detail: "spend limit reached" };
+    const stop =
+      ((await ctx.kv.get<number>("ledger:total")) ?? 0) >= BUDGET_STOP_USD
+        ? "spend limit reached"
+        : ctx.tavily.credits - credits0 >= maxTavilyCredits
+          ? "nightly Tavily allowance used"
+          : null;
+    if (stop) {
+      const r: RefreshResult = { placeId: id, status: "skipped", newItems: 0, modelCalls: 0, costUsd: 0, tavilyCredits: 0, detail: stop };
       out.push(r);
       onResult(r);
       continue;
