@@ -27,6 +27,17 @@ Format: date, product, what happened, impact, suggestion.
   platform and a 250 GiB disk. A CPU batch job that forgets `--platform cpu-d3 --preset
   2vcpu-8gb --disk-size` would start a GPU VM. A CPU default, or a confirmation when no platform
   is given, would avoid an expensive mistake.
+- **2026-10-09 — A hackathon tenant cannot automate jobs.** Uploading an authorized key for a
+  service account needs the tenant admin role (`permission_denied` otherwise), and the Nebius
+  CLI exists only for Linux and macOS, so a Windows participant can neither script nor
+  schedule a job from CI. The job was started from the console instead. A per-project
+  permission to create keys for one's own service accounts would unblock CI.
+- **2026-10-09 — Job secrets: two easy mistakes.** Secrets created with Create resource,
+  SecretStash secret are not attached to a job: the container started without them and failed
+  with our own "NEBIUS_API_KEY is not set". In the job form, the variable name rejects hyphens
+  with a raw regex error (`spec.environment_variables[0].name: value does not match regex
+  pattern`); a plain sentence ("use letters, digits and _") would save a round trip. Otherwise
+  the flow is quick: the public image was pulled and running 20 seconds after creation.
 - **2026-10-09 — The docs are agent-friendly.** Every page is available as Markdown (`.md`) with
   an `llms.txt` index, and the CI authentication page (service account, no browser) answered
   everything needed to write the workflow. The secret store is called MysteryBox in the CLI

@@ -78,7 +78,7 @@ Tavily is called at run time for every new place (`src/lib/tavily.ts`):
 
 Every place with a published briefing is followed. `npm run pipeline -- refresh` re-reads the agenda listings of every followed place and re-runs the pipeline; because every stage is cached by content, an unchanged agenda costs no model call and only the items of a new agenda are sorted and explained. First real run (9 October 2026): Edgecombe, Ann Arbor and Hood River unchanged at $0; Columbia County had 14 new items, processed with 5 model calls for $0.029.
 
-In production the command runs each night as a **Nebius Serverless AI job** on a CPU VM, started by a GitHub Actions schedule (`.github/workflows/nightly.yml`, image `deploy/Dockerfile.refresh`, keys injected from Nebius MysteryBox at run time). A run stops at 30 Tavily credits so a month of nights fits the Tavily allowance. Setup: [deploy/README.md](deploy/README.md).
+The command is packaged as a container image (`deploy/Dockerfile.refresh`, public at `ghcr.io/chinorab/townwatch-refresh`). It runs each night on a GitHub Actions schedule (`.github/workflows/nightly.yml`), and the same image runs as a **Nebius Serverless AI job** on a CPU VM, with the keys injected from Nebius SecretStash at run time (first job on 9 October 2026 refreshed the 4 followed places). Starting the Nebius job from the schedule needs a service account key, which the hackathon tenant does not let a non-admin create, so the workflow can do both. A run stops at 30 Tavily credits so a month of nights fits the Tavily allowance. Setup: [deploy/README.md](deploy/README.md).
 
 ## Trust rules
 

@@ -84,7 +84,7 @@ Measured on the first analysis of the three demo places, 8 October 2026 (191 age
 
 Nano sorted all 191 items for one cent. Ultra explained 29 of them (15%) and accounts for 97% of the cost. A place costs between $0.08 and $0.18 the first time and nothing after that.
 
-Followed places are refreshed every night by a **Nebius Serverless AI job** on a CPU VM, started by a GitHub Actions schedule: unchanged agendas cost no model call, new ones are sorted and explained. On its first real run, Columbia County had published 14 new items, processed with 5 model calls for 3 cents; the other places cost nothing.
+Followed places are refreshed every night: unchanged agendas cost no model call, new ones are sorted and explained. The refresh is a container image that runs as a **Nebius Serverless AI job** on a CPU VM (keys injected from Nebius SecretStash) and on a nightly GitHub Actions schedule. On its first real run, Columbia County had published 14 new items, processed with 5 model calls for 3 cents; the other places cost nothing.
 
 Analyses are persisted jobs advanced one bounded step per request, so nothing runs longer than one stage and two visitors asking for the same place share one job. Every document, triage batch and explanation is cached under a hash of its content in Upstash Redis.
 

@@ -25,7 +25,9 @@ image has been run as a Nebius Serverless AI job started from the console:
 3. Nebius console, Create resource, Job: image `ghcr.io/chinorab/townwatch-refresh:latest`,
    no GPU (CPU platform, `2vcpu-8gb`), timeout 1 hour, four secret environment variables with
    the names above (Create secret in the job form), Create job. The job log ends with
-   `Refreshed N places`.
+   `Refreshed N places`. Done on 9 October 2026: the job refreshed the 4 followed places.
+   The variable name field only takes letters, digits and `_`; secrets created outside the
+   job form are not attached to it.
 
 ## Fully automatic setup (needs a tenant admin)
 
